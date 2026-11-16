@@ -6,7 +6,7 @@ metadata:
   name: astro-fleet
   namespace: astro
 spec:
-  replicas: 3
+  replicas: 5
   scheduling: Packed          # agrupa partidas en pocos nodos para poder reducirlos
   strategy:
     type: RollingUpdate
@@ -71,7 +71,7 @@ spec:
     type: Buffer
     buffer:
       bufferSize: 5
-      minReplicas: 3
+      minReplicas: 5        # Agones exige minReplicas >= bufferSize
       maxReplicas: 300
   sync:
     type: FixedInterval
