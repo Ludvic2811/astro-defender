@@ -105,3 +105,9 @@ variable "github_repository" {
   type        = string
   default     = ""
 }
+
+variable "github_oidc_sub_prefix" {
+  description = "Prefijo del claim sub de GitHub si el repositorio usa sujetos inmutables (gh api repos/OWNER/REPO/actions/oidc/customization/sub)"
+  type        = string
+  default     = ""
+}

@@ -22,11 +22,15 @@ resource "aws_iam_role" "github_deploy" {
       Condition = {
         StringEquals = { "token.actions.githubusercontent.com:aud" = "sts.amazonaws.com" }
         # Solo la rama main o el environment "production" de este repositorio
+        # Se aceptan el formato clásico (repo:propietario/nombre) y el de "sujeto
+        # inmutable" que GitHub usa en repositorios nuevos (repo:propietario@id/nombre@id).
         StringLike = {
-          "token.actions.githubusercontent.com:sub" = [
-            "repo:${var.github_repository}:ref:refs/heads/main",
-            "repo:${var.github_repository}:environment:production",
-          ]
+          "token.actions.githubusercontent.com:sub" = flatten([
+            for prefijo in compact(["repo:${var.github_repository}", var.github_oidc_sub_prefix]) : [
+              "${prefijo}:ref:refs/heads/main",
+              "${prefijo}:environment:production",
+            ]
+          ])
         }
       }
     }]
