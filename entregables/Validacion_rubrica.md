@@ -133,7 +133,7 @@ Las rutas de evidencia son relativas a la raíz del repositorio.
   - guion de exposición aparte.
 - **Pruebas ejecutadas:** se exportaron el reporte y la presentación a PDF y se revisaron visualmente página por página.
 - **Resultado:** el reporte tiene 6 páginas, 17 figuras y 4 tablas; la presentación tiene 10 diapositivas.
-- **Evidencia:** en `entregables/`, `Reporte_tecnico_Astro_Defender.docx` y `.pdf`, `Presentacion_Astro_Defender.pptx` y `.pdf`, y `Guion_exposicion.md`.
+- **Evidencia:** en `entregables/`, `Anexo_evidencias_y_pruebas.docx` y `.pdf` (todas las capturas y el detalle de las pruebas), `Reporte_tecnico_Astro_Defender.docx` y `.pdf`, `Presentacion_Astro_Defender.pptx` y `.pdf`, y `Guion_exposicion.md`.
 - **Pendiente:** la infraestructura se destruyó para no generar costos. La demo del autoescalado se hace con las capturas o, si se quiere en vivo, volviendo a desplegar unos 30 min antes (pasos en el guion, unos US$1).
 
 ---

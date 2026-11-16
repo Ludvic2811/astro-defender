@@ -10,6 +10,7 @@ Videojuego espacial 2D de acción y supervivencia para navegador, individual o c
 
 - Reporte técnico (Word y PDF, 6 páginas)
 - Presentación (PowerPoint y PDF)
+- Anexo de evidencias y pruebas (Word y PDF): todas las capturas, los reportes de Locust y el detalle de cada prueba
 - [Guion de exposición](entregables/Guion_exposicion.md)
 - [Validación contra la rúbrica](entregables/Validacion_rubrica.md)
 

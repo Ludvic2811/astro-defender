@@ -153,9 +153,10 @@ for clave, nombre in (("ramp", "Rampa 0→1,000 en 10 min (colchón 10 %)"),
 rep.tabla(["Prueba", "CCU máx.", "Espect.", "Partidas", "Nodos", "RTT p95 en CCU máx.", "Tick p99 mediana / máx.", "Errores"],
           filas, pie="Resultados medidos (Prometheus + Locust). Errores: fallos sobre todas las peticiones y mensajes de Locust.",
           anchos_cm=[5.0, 1.4, 1.3, 1.5, 1.5, 2.2, 2.6, 1.6], tam=7.5)
-rep.p(f"Asignación de partidas: en la rampa fallaron {g('ramp', 'match_fallos')} de {g('ramp', 'match_n')} solicitudes y "
-      f"en el pico {g('spike', 'match_fallos')} de {g('spike', 'match_n')}; cada fallo es una espera de 25 s sin servidor "
-      "Ready, tras la cual el bot reintenta, así que el porcentaje cuenta intentos y no jugadores perdidos. También hubo "
+rep.p(f"Asignación de partidas: en la rampa fallaron {g('ramp', 'match_fallos')} de {g('ramp', 'match_n')} solicitudes "
+      f"(7,448 sin servidor Ready tras 25 s y 847 por tiempo de espera del lobby en un solo minuto) y en el pico "
+      f"{g('spike', 'match_fallos')} de {g('spike', 'match_n')}, todas sin servidor Ready; el bot reintenta, así que "
+      "el porcentaje cuenta intentos y no jugadores perdidos. También hubo "
       f"{g('spike', 'sala_llena_n')} rechazos por «sala llena» en el pico: dos asignaciones simultáneas llegaban a la "
       "misma sala antes de que el servidor publicara que estaba completa. Un primer intento de rampa con colchón fijo "
       "de 5 servidores se detuvo a los 7 minutos con 75 % de solicitudes fallidas; sus series de Prometheus se perdieron "

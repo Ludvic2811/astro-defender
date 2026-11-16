@@ -53,7 +53,10 @@ Por encima de ese punto:
 | 10 % | ~90 jugadores por minuto |
 | 25 % + sobreaprovisionamiento (`k8s/overprovisioning.yaml`) | ~250 jugadores por minuto |
 
-Las solicitudes de partida fallidas (rampa 8,295 de 10,036; pico 4,888 de 6,656) son esperas de 25 s sin servidor Ready, tras las cuales el bot reintenta. Cuentan intentos, no jugadores perdidos.
+Solicitudes de partida fallidas (el bot reintenta, así que cuentan intentos y no jugadores perdidos):
+
+- **Rampa:** 8,295 de 10,036. De ellas, 7,448 fueron esperas de 25 s sin servidor Ready (503) y 847 fueron errores 500 «timeout» del lobby, concentrados entre las 12:43:43 y las 12:44:43.
+- **Pico:** 4,888 de 6,656, todas 503 sin servidor Ready.
 
 Hubo 837 rechazos por «sala llena» en el pico: dos asignaciones simultáneas llegaban a la misma sala antes de que el servidor publicara que estaba completa.
 

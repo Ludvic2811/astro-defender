@@ -1,0 +1,40 @@
+$ npm test --prefix server   # lógica del juego y sala multijugador
+✔ el primer jugador es anfitrión y puede iniciar
+✔ rechaza al quinto jugador y admite espectadores
+✔ reasigna anfitrión al desconectarse
+✔ tick produce snapshots y se difunden
+✔ ignora mensajes malformados
+✔ bombas y elección de cartas por WebSocket
+✔ inicia la oleada 1 con un jugador
+✔ máximo 4 jugadores
+✔ oleadas infinitas: pasa de la 10 sin victoria
+✔ hay jefe cada 5 oleadas y al vencerlo se eligen cartas
+✔ los jefes son más resistentes cada vez
+✔ curva de dificultad creciente y acotada
+✔ disparar destruye enemigos, suma puntos y combo
+✔ multiplicador de combo
+✔ colisión quita una vida, el arma baja de nivel y el escudo protege
+✔ poderes: arma, vida, bomba y disparo triple
+✔ la bomba limpia las balas enemigas y daña a todos
+✔ el láser del jefe daña a quien esté debajo
+✔ cooperativo: los caídos reaparecen en la siguiente oleada
+✔ game over cuando todos pierden sus vidas
+✔ todas las cartas se pueden aplicar
+✔ snapshot compacto con el formato esperado
+ℹ tests 22
+ℹ pass 22
+ℹ fail 0
+
+$ npm test --prefix lobby
+✔ el código de sala es el sufijo del GameServer
+ℹ tests 1
+ℹ pass 1
+ℹ fail 0
+
+$ (cd lambda/leaderboard && node --test)
+✔ valida entradas
+✔ POST guarda y GET devuelve ordenado por modo
+✔ rechaza JSON inválido y métodos no soportados
+ℹ tests 3
+ℹ pass 3
+ℹ fail 0
