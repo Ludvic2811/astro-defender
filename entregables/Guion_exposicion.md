@@ -2,14 +2,14 @@
 
 Presentación: `Presentacion_Astro_Defender.pptx` (10 diapositivas). Cada diapositiva repite este guion en sus notas del orador.
 
-**Reparto sugerido** (ajusten los nombres):
+**Equipo:** Luis Sambrano Mendoza y Manuel Sambrano Mendoza.
 
-| Integrante | Diapositivas |
-|---|---|
-| 1. Mecánicas del juego | 1, 2 y 3 |
-| 2. Interfaz y multijugador | 4 y 5 |
-| 3. AWS, Kubernetes y Terraform | 6 y 7 |
-| 4. CI/CD, monitoreo y pruebas | 8, 9 y 10 |
+**Reparto sugerido** (unos 5 minutos cada uno):
+
+| Integrante | Diapositivas | Temas |
+|---|---|---|
+| Luis Sambrano Mendoza | 1 a 5 | Juego, mecánicas, arquitectura, Kubernetes y Agones |
+| Manuel Sambrano Mendoza | 6 a 10 | Terraform y CI/CD, serverless, autoescalado, resultados y conclusiones |
 
 ---
 

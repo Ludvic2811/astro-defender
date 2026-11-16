@@ -136,11 +136,9 @@ Así se desplegó el 16 de noviembre de 2026. Requisitos: Terraform ≥ 1.10, AW
    ```
    El script borra antes los balanceadores que creó Kubernetes. Si `destroy` se queda varios minutos en la subred o en la VPC, ejecuta en otra terminal `bash scripts/limpiar-huerfanos.sh`: borra las interfaces de red y los security groups que EKS deja huérfanos.
 
-## Reparto del equipo
+## Equipo
 
 | Integrante | Responsabilidad | Archivos principales |
 |---|---|---|
-| 1 | Mecánicas del juego | `shared/sim.js`, `server/test/` |
-| 2 | Diseño visual, interfaz y multijugador | `client/`, `server/src/room.js` |
-| 3 | AWS, Docker, Kubernetes, Agones y Terraform | `terraform/`, `k8s/`, `*/Dockerfile` |
-| 4 | CI/CD, monitoreo, pruebas de carga y documentación | `.github/`, `monitoring/`, `loadtest/`, `docs/` |
+| Luis Sambrano Mendoza | Mecánicas del juego, diseño visual, interfaz y multijugador | `shared/sim.js`, `client/`, `server/` |
+| Manuel Sambrano Mendoza | AWS, Docker, Kubernetes, Agones, Terraform, CI/CD, monitoreo y pruebas de carga | `terraform/`, `k8s/`, `.github/`, `monitoring/`, `loadtest/`, `docs/` |

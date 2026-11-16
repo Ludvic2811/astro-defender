@@ -18,7 +18,7 @@ const FONT = 'Century Gothic';
 
 const pres = new pptxgen();
 pres.layout = 'LAYOUT_WIDE'; // 13.33 x 7.5 in
-pres.author = 'Equipo Astro Defender';
+pres.author = 'Luis Sambrano Mendoza y Manuel Sambrano Mendoza';
 pres.title = 'Astro Defender: lanzamiento en AWS';
 pres.theme = { headFontFace: FONT, bodyFontFace: FONT };
 
@@ -62,6 +62,11 @@ s.addText('Astro Defender', { x: 0.6, y: 1.5, w: 6.4, h: 1.0, fontFace: FONT, fo
 s.addText('Invasión Galáctica: lanzamiento en AWS', { x: 0.6, y: 2.5, w: 6.4, h: 0.6, fontFace: FONT, fontSize: 22, color: 'F6B26B', margin: 0, isTextBox: true });
 s.addText('EKS + Agones · Terraform · GitHub Actions · Lambda + DynamoDB · Prometheus, Grafana y CloudWatch',
   { x: 0.6, y: 3.3, w: 6.2, h: 0.9, fontFace: FONT, fontSize: 15, color: 'C9D6EA', margin: 0, isTextBox: true });
+s.addText([
+  { text: 'Equipo', options: { fontSize: 13, color: 'F6B26B', breakLine: true } },
+  { text: 'Luis Sambrano Mendoza', options: { fontSize: 18, bold: true, color: 'FFFFFF', breakLine: true } },
+  { text: 'Manuel Sambrano Mendoza', options: { fontSize: 18, bold: true, color: 'FFFFFF' } },
+], { x: 0.6, y: 4.35, w: 6.2, h: 1.15, fontFace: FONT, margin: 0, valign: 'top', isTextBox: true });
 s.addText('Cómputo en la Nube · Unidad 3 · Instituto Tecnológico de Colima\n16 de noviembre de 2026',
   { x: 0.6, y: 5.6, w: 8, h: 0.8, fontFace: FONT, fontSize: 14, color: 'C9D6EA', margin: 0, isTextBox: true });
 s.addNotes('Guion (0:00-0:45). Presentamos Astro Defender, nuestro juego de naves cooperativo, y cómo lo lanzamos en AWS siguiendo el proyecto integrador. Todo lo que vamos a mostrar se ejecutó de verdad hoy: el despliegue, las pruebas de carga y las métricas. Al terminar destruimos la infraestructura para no generar costos.');

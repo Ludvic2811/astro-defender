@@ -33,6 +33,7 @@ d = rep.doc
 rep.titulo("Astro Defender: Invasión Galáctica", 0)
 rep.p("Reporte técnico del proyecto integrador · Unidad 3: Infraestructura y despliegue de videojuegos en la nube",
       negrita_inicial="", alin=0, tam=10.5)
+rep.p("Equipo: Luis Sambrano Mendoza y Manuel Sambrano Mendoza", alin=0, tam=10)
 rep.p("Cómputo en la Nube · Instituto Tecnológico de Colima · 16 de noviembre de 2026 · "
       "Repositorio: github.com/Ludvic2811/astro-defender", alin=0, tam=9)
 
