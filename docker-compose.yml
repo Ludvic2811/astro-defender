@@ -1,0 +1,23 @@
+# Entorno local con Docker (sin Kubernetes ni Agones):
+#   docker compose up --build   ->  http://localhost:8080
+services:
+  gameserver:
+    build:
+      context: .
+      dockerfile: server/Dockerfile
+    ports:
+      - "7777:7777"
+      - "9100:9100"
+
+  lobby:
+    build:
+      context: .
+      dockerfile: lobby/Dockerfile
+    environment:
+      MATCHMAKER_MODE: local
+      GAMESERVER_PORT: "7777"
+      GAMESERVER_STATUS_URL: http://gameserver:7777/status
+    ports:
+      - "8080:8080"
+    depends_on:
+      - gameserver

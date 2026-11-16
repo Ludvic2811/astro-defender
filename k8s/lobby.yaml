@@ -1,0 +1,127 @@
+# Lobby: web del juego + matchmaker. ${LOBBY_IMAGE} se sustituye en el pipeline.
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: astro-lobby
+  namespace: astro
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: astro-lobby
+  namespace: astro
+rules:
+  - apiGroups: ["agones.dev"]
+    resources: ["gameservers"]
+    verbs: ["get", "list", "watch"]
+  - apiGroups: ["allocation.agones.dev"]
+    resources: ["gameserverallocations"]
+    verbs: ["create"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: astro-lobby
+  namespace: astro
+subjects:
+  - kind: ServiceAccount
+    name: astro-lobby
+    namespace: astro
+roleRef:
+  kind: Role
+  name: astro-lobby
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: astro-lobby
+  namespace: astro
+  labels:
+    app: astro-lobby
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: astro-lobby
+  template:
+    metadata:
+      labels:
+        app: astro-lobby
+    spec:
+      serviceAccountName: astro-lobby
+      containers:
+        - name: lobby
+          image: ${LOBBY_IMAGE}
+          ports:
+            - name: http
+              containerPort: 8080
+          env:
+            - name: MATCHMAKER_MODE
+              value: agones
+            - name: FLEET_NAME
+              value: astro-fleet
+          envFrom:
+            - configMapRef:
+                name: astro-config     # creado por Terraform (URL de la API de líderes)
+                optional: true
+          readinessProbe:
+            httpGet: { path: /healthz, port: http }
+            periodSeconds: 5
+          livenessProbe:
+            httpGet: { path: /healthz, port: http }
+            periodSeconds: 10
+          resources:
+            requests:
+              cpu: 100m
+              memory: 96Mi
+            limits:
+              cpu: 500m
+              memory: 256Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: astro-lobby
+  namespace: astro
+  labels:
+    app: astro-lobby
+spec:
+  type: LoadBalancer           # URL pública del juego
+  selector:
+    app: astro-lobby
+  ports:
+    - name: http
+      port: 80
+      targetPort: http
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: astro-lobby
+  namespace: astro
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: astro-lobby
+  minReplicas: 2
+  maxReplicas: 10
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 60
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: astro-lobby
+  namespace: astro
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      app: astro-lobby

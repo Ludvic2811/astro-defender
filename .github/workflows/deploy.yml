@@ -1,0 +1,105 @@
+name: Deploy
+
+# Pipeline de entrega: prueba el código, construye las imágenes, las sube a ECR
+# etiquetadas con el commit y actualiza la flota de Agones y el lobby en EKS.
+# Las credenciales de AWS son temporales (OIDC): no hay llaves guardadas en GitHub.
+on:
+  push:
+    branches: [main]
+    paths:
+      - "client/**"
+      - "server/**"
+      - "lobby/**"
+      - "shared/**"
+      - "k8s/**"
+      - ".github/workflows/deploy.yml"
+  workflow_dispatch:
+
+concurrency:
+  group: deploy
+  cancel-in-progress: false
+
+env:
+  AWS_REGION: ${{ vars.AWS_REGION || 'us-east-1' }}
+  CLUSTER_NAME: ${{ vars.CLUSTER_NAME || 'astro-defender' }}
+
+permissions:
+  id-token: write   # para pedir el token OIDC a GitHub
+  contents: read
+
+jobs:
+  test:
+    name: Pruebas
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm ci --prefix server && npm test --prefix server
+      - run: npm ci --prefix lobby && npm test --prefix lobby
+      - run: node --test
+        working-directory: lambda/leaderboard
+
+  deploy:
+    name: Publicar en ECR y actualizar EKS
+    needs: test
+    # Se activa con la variable DEPLOY_ENABLED=true cuando el clúster existe
+    if: vars.DEPLOY_ENABLED == 'true'
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Credenciales de AWS (OIDC)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          role-session-name: github-deploy-${{ github.run_id }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Login en Amazon ECR
+        id: ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Construir y subir imágenes
+        env:
+          REGISTRY: ${{ steps.ecr.outputs.registry }}
+        run: |
+          TAG="${GITHUB_SHA::7}"
+          GS="$REGISTRY/astro-defender/gameserver:$TAG"
+          LB="$REGISTRY/astro-defender/lobby:$TAG"
+          docker build -f server/Dockerfile -t "$GS" .
+          docker build -f lobby/Dockerfile -t "$LB" .
+          docker push "$GS"
+          docker push "$LB"
+          echo "GAMESERVER_IMAGE=$GS" >> "$GITHUB_ENV"
+          echo "LOBBY_IMAGE=$LB" >> "$GITHUB_ENV"
+
+      - name: Configurar kubectl
+        run: aws eks update-kubeconfig --region "$AWS_REGION" --name "$CLUSTER_NAME"
+
+      # La Fleet usa RollingUpdate: Agones reemplaza solo los GameServers en estado
+      # Ready; los Allocated (partidas en curso) siguen con la versión anterior
+      # hasta que su partida termina, así que el despliegue no corta partidas.
+      - name: Desplegar en Kubernetes
+        run: |
+          envsubst '${GAMESERVER_IMAGE}' < k8s/gameserver-fleet.yaml | kubectl apply -f -
+          envsubst '${LOBBY_IMAGE}' < k8s/lobby.yaml | kubectl apply -f -
+          kubectl apply -f k8s/monitoring.yaml
+          kubectl rollout status deployment/astro-lobby -n astro --timeout=300s
+
+      - name: Estado y URL pública
+        run: |
+          kubectl get fleet,fleetautoscaler -n astro
+          kubectl get gameservers -n astro -o wide | head -20
+          for i in $(seq 1 30); do
+            HOST=$(kubectl get svc astro-lobby -n astro -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
+            [ -n "$HOST" ] && break; sleep 10
+          done
+          {
+            echo "### 🚀 Juego desplegado: http://$HOST"
+            echo "- Imagen del servidor: \`$GAMESERVER_IMAGE\`"
+            echo "- Imagen del lobby: \`$LOBBY_IMAGE\`"
+          } >> "$GITHUB_STEP_SUMMARY"
+          echo "URL del juego: http://$HOST"

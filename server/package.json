@@ -1,0 +1,19 @@
+{
+  "name": "astro-defender-gameserver",
+  "version": "1.0.0",
+  "description": "Servidor autoritativo multijugador de Astro Defender (Node.js + WebSockets + Agones)",
+  "type": "module",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "node --watch src/index.js",
+    "test": "node --test"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "prom-client": "^15.1.3",
+    "ws": "^8.18.0"
+  }
+}

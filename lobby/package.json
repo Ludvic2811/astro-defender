@@ -1,0 +1,18 @@
+{
+  "name": "astro-defender-lobby",
+  "version": "1.0.0",
+  "description": "Sirve el cliente web y asigna servidores de juego mediante Agones (matchmaker)",
+  "type": "module",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "node --watch src/index.js",
+    "test": "node --test"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "prom-client": "^15.1.3"
+  }
+}

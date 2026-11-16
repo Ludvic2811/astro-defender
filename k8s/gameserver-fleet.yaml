@@ -1,0 +1,79 @@
+# Flota de servidores de juego administrada por Agones.
+# ${GAMESERVER_IMAGE} se sustituye en el pipeline (envsubst).
+apiVersion: agones.dev/v1
+kind: Fleet
+metadata:
+  name: astro-fleet
+  namespace: astro
+spec:
+  replicas: 3
+  scheduling: Packed          # agrupa partidas en pocos nodos para poder reducirlos
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+  template:
+    metadata:
+      labels:
+        app: astro-gameserver
+    spec:
+      ports:
+        - name: game
+          portPolicy: Dynamic   # Agones asigna un puerto del rango 7000-8000 en el nodo
+          containerPort: 7777
+          protocol: TCP         # WebSocket va sobre TCP
+      health:
+        initialDelaySeconds: 5
+        periodSeconds: 5
+        failureThreshold: 3
+      sdkServer:
+        logLevel: Info
+      template:
+        metadata:
+          labels:
+            app: astro-gameserver
+        spec:
+          containers:
+            - name: astro-gameserver
+              image: ${GAMESERVER_IMAGE}
+              imagePullPolicy: IfNotPresent
+              env:
+                - name: METRICS_PORT
+                  value: "9100"
+                - name: IDLE_ALLOCATED_SECONDS
+                  value: "90"
+                - name: EMPTY_SHUTDOWN_SECONDS
+                  value: "15"
+              ports:
+                - name: metrics
+                  containerPort: 9100
+              # Medido: una partida de 4 pilotos usa ~8-25 milicores y ~56 MB.
+              # Con 50m caben ~28 servidores por nodo t3.large.
+              resources:
+                requests:
+                  cpu: 50m
+                  memory: 96Mi
+                limits:
+                  cpu: 500m
+                  memory: 256Mi
+---
+# Autoescalado de la flota: mantiene siempre un colchón de servidores "Ready"
+# listos para asignarse al instante.
+apiVersion: autoscaling.agones.dev/v1
+kind: FleetAutoscaler
+metadata:
+  name: astro-fleet-autoscaler
+  namespace: astro
+spec:
+  fleetName: astro-fleet
+  policy:
+    type: Buffer
+    buffer:
+      bufferSize: 5
+      minReplicas: 3
+      maxReplicas: 300
+  sync:
+    type: FixedInterval
+    fixedInterval:
+      seconds: 5

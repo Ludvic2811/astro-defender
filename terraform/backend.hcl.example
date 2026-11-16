@@ -1,0 +1,6 @@
+# Copia este archivo como backend.hcl y crea antes el bucket (scripts/bootstrap-state.sh)
+bucket       = "astro-defender-tfstate-CAMBIAME"
+key          = "astro-defender/terraform.tfstate"
+region       = "us-east-1"
+use_lockfile = true
+encrypt      = true

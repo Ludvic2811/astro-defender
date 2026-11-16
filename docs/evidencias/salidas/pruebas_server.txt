@@ -1,0 +1,12 @@
+✔ cooperativo: los caídos reaparecen en la siguiente oleada (0.1061ms)
+✔ game over cuando todos pierden sus vidas (0.1136ms)
+✔ todas las cartas se pueden aplicar (0.1736ms)
+✔ snapshot compacto con el formato esperado (0.6337ms)
+ℹ tests 22
+ℹ suites 0
+ℹ pass 22
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 118.4578

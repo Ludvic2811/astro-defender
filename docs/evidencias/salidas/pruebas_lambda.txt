@@ -1,0 +1,10 @@
+✔ POST guarda y GET devuelve ordenado por modo (1.7138ms)
+✔ rechaza JSON inválido y métodos no soportados (0.1672ms)
+ℹ tests 3
+ℹ suites 0
+ℹ pass 3
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 81.0368

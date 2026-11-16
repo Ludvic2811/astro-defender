@@ -1,0 +1,23 @@
+node_modules/
+.DS_Store
+*.log
+
+# Terraform
+terraform/.terraform/
+terraform/.build/
+terraform/*.tfstate
+terraform/*.tfstate.*
+terraform/terraform.tfvars
+terraform/backend.hcl
+terraform/.terraform.lock.hcl.bak
+
+# Pruebas de carga
+loadtest/resultados/
+__pycache__/
+.venv/
+
+# Planes binarios de Terraform (pueden contener valores sensibles)
+*.tfplan
+
+# Material del curso (no se redistribuye)
+Unidad3_*.pdf

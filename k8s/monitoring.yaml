@@ -1,0 +1,27 @@
+# Prometheus (kube-prometheus-stack) descubre estas métricas automáticamente.
+apiVersion: monitoring.coreos.com/v1
+kind: PodMonitor
+metadata:
+  name: astro-gameservers
+  namespace: astro
+spec:
+  selector:
+    matchLabels:
+      app: astro-gameserver
+  podMetricsEndpoints:
+    - port: metrics
+      interval: 10s
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: astro-lobby
+  namespace: astro
+spec:
+  selector:
+    matchLabels:
+      app: astro-lobby
+  endpoints:
+    - port: http
+      path: /metrics
+      interval: 10s

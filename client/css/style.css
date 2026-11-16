@@ -1,0 +1,68 @@
+:root {
+  --bg: #03040b;
+  --accent: #4fc3f7;
+  --text: #e8f4ff;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  height: 100%;
+  background: radial-gradient(ellipse at center, #0b1030 0%, var(--bg) 70%);
+  color: var(--text);
+  font-family: 'Exo 2', system-ui, sans-serif;
+  overflow: hidden;
+}
+
+/* Phaser centra el canvas (autoCenter) y alinea encima su capa DOM;
+   por eso el contenedor no debe usar flexbox. */
+#game {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+}
+
+#game canvas {
+  border-radius: 6px;
+  box-shadow: 0 0 40px rgba(79, 195, 247, 0.15);
+}
+
+/* Campos de texto creados con Phaser DOM */
+.astro-input {
+  width: 260px;
+  padding: 10px 14px;
+  font: 600 18px 'Orbitron', sans-serif;
+  letter-spacing: 1px;
+  text-align: center;
+  color: var(--text);
+  background: rgba(10, 20, 45, 0.85);
+  border: 2px solid rgba(79, 195, 247, 0.6);
+  border-radius: 8px;
+  outline: none;
+}
+.astro-input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 14px rgba(79, 195, 247, 0.5);
+}
+.astro-input::placeholder { color: rgba(232, 244, 255, 0.4); }
+
+/* Aviso para jugar en horizontal en teléfonos */
+#rotate-hint {
+  display: none;
+  position: fixed;
+  top: 12px;
+  left: 16px;
+  right: 16px;
+  padding: 10px 14px;
+  text-align: center;
+  font: 600 14px 'Exo 2', sans-serif;
+  color: var(--text);
+  background: rgba(10, 20, 45, 0.9);
+  border: 1px solid rgba(79, 195, 247, 0.5);
+  border-radius: 8px;
+  pointer-events: none;
+}
+@media (orientation: portrait) and (pointer: coarse) {
+  #rotate-hint { display: block; }
+}

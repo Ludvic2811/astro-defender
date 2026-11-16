@@ -1,0 +1,14 @@
+**/node_modules
+.git
+.github
+terraform
+loadtest
+docs
+monitoring
+k8s
+scripts
+**/*.test.js
+**/*.test.mjs
+**/test/
+*.md
+!client/assets/*.md
