@@ -1,0 +1,10 @@
+$ aws ec2 describe-instances --filters Name=tag:eks:cluster-name,Values=astro-defender Name=instance-state-name,Values=running --query 'Reservations[].Instances[].[InstanceId,InstanceType,Placement.AvailabilityZone,State.Name,LaunchTime]' --output table
+-------------------------------------------------------------------------------------------
+|                                    DescribeInstances                                    |
++----------------------+-----------+-------------+----------+-----------------------------+
+|  i-0536fb8d07646dec4 |  t3.large |  us-east-1b |  running |  2026-11-16T17:59:57+00:00  |
+|  i-008cd7a43ecf599cc |  t3.large |  us-east-1b |  running |  2026-11-16T18:05:02+00:00  |
+|  i-086e208d7b85146c4 |  t3.large |  us-east-1a |  running |  2026-11-16T17:59:57+00:00  |
+|  i-090e5ff99c1d92773 |  t3.large |  us-east-1a |  running |  2026-11-16T18:05:02+00:00  |
++----------------------+-----------+-------------+----------+-----------------------------+
+

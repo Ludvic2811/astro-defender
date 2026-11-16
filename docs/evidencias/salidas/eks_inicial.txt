@@ -1,0 +1,21 @@
+$ aws eks describe-cluster --name astro-defender --query 'cluster.{Nombre:name,Version:version,Estado:status,Plataforma:platformVersion,Creado:createdAt}' --output table
+----------------------------------------------------
+|                  DescribeCluster                 |
++-------------+------------------------------------+
+|  Creado     |  2026-11-16T11:47:23.414000-06:00  |
+|  Estado     |  ACTIVE                            |
+|  Nombre     |  astro-defender                    |
+|  Plataforma |  eks.27                            |
+|  Version    |  1.35                              |
++-------------+------------------------------------+
+
+$ aws eks list-nodegroups --cluster-name astro-defender --output text
+NODEGROUPS	general-20261116175857175000000016
+
+$ kubectl get nodes -L node.kubernetes.io/instance-type,topology.kubernetes.io/zone
+NAME                          STATUS   ROLES    AGE   VERSION               INSTANCE-TYPE   ZONE
+ip-10-0-29-155.ec2.internal   Ready    <none>   14m   v1.35.9-eks-9adbfea   t3.large        us-east-1a
+ip-10-0-34-46.ec2.internal    Ready    <none>   14m   v1.35.9-eks-9adbfea   t3.large        us-east-1b
+ip-10-0-42-33.ec2.internal    Ready    <none>   19m   v1.35.9-eks-9adbfea   t3.large        us-east-1b
+ip-10-0-8-145.ec2.internal    Ready    <none>   19m   v1.35.9-eks-9adbfea   t3.large        us-east-1a
+

@@ -1,0 +1,22 @@
+$ aws ecr describe-images --repository-name astro-defender/gameserver --query 'reverse(sort_by(imageDetails,&imagePushedAt))[:3].{Etiqueta:imageTags[0],Subida:imagePushedAt,MB:imageSizeInBytes}' --output table
+--------------------------------------------------------------
+|                       DescribeImages                       |
++----------+-----------+-------------------------------------+
+| Etiqueta |    MB     |               Subida                |
++----------+-----------+-------------------------------------+
+|  e51c33e |  63149703 |  2026-11-16T12:12:44.957000-06:00   |
+|  None    |  1438     |  2026-11-16T12:12:44.777000-06:00   |
+|  None    |  63149703 |  2026-11-16T12:12:44.777000-06:00   |
++----------+-----------+-------------------------------------+
+
+$ aws ecr describe-images --repository-name astro-defender/lobby --query 'reverse(sort_by(imageDetails,&imagePushedAt))[:3].{Etiqueta:imageTags[0],Subida:imagePushedAt,MB:imageSizeInBytes}' --output table
+--------------------------------------------------------------
+|                       DescribeImages                       |
++----------+-----------+-------------------------------------+
+| Etiqueta |    MB     |               Subida                |
++----------+-----------+-------------------------------------+
+|  e51c33e |  68465072 |  2026-11-16T12:12:46.090000-06:00   |
+|  None    |  68465072 |  2026-11-16T12:12:45.861000-06:00   |
+|  None    |  1430     |  2026-11-16T12:12:45.854000-06:00   |
++----------+-----------+-------------------------------------+
+

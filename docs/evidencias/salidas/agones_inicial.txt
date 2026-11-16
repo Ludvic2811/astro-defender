@@ -1,0 +1,25 @@
+$ kubectl get fleet,fleetautoscaler -n astro
+NAME                           SCHEDULING   DESIRED   CURRENT   ALLOCATED   READY   AGE
+fleet.agones.dev/astro-fleet   Packed       5         5         0           5       7m59s
+
+NAME                                                            AGE
+fleetautoscaler.autoscaling.agones.dev/astro-fleet-autoscaler   7m2s
+
+$ kubectl get gameservers -n astro
+NAME                      STATE   ADDRESS                                     PORT   NODE                         AGE
+astro-fleet-874lg-gvc6h   Ready   ec2-100-26-188-37.compute-1.amazonaws.com   7182   ip-10-0-34-46.ec2.internal   63s
+astro-fleet-874lg-m79qn   Ready   ec2-100-26-188-37.compute-1.amazonaws.com   7264   ip-10-0-34-46.ec2.internal   4m51s
+astro-fleet-874lg-t2bp8   Ready   ec2-100-26-188-37.compute-1.amazonaws.com   7776   ip-10-0-34-46.ec2.internal   7m2s
+astro-fleet-874lg-xtp2n   Ready   ec2-100-26-188-37.compute-1.amazonaws.com   7520   ip-10-0-34-46.ec2.internal   5m8s
+astro-fleet-874lg-zcfwh   Ready   ec2-100-26-188-37.compute-1.amazonaws.com   7105   ip-10-0-34-46.ec2.internal   7m3s
+
+$ kubectl get hpa,deploy,svc -n astro
+NAME                                              REFERENCE                TARGETS       MINPODS   MAXPODS   REPLICAS   AGE
+horizontalpodautoscaler.autoscaling/astro-lobby   Deployment/astro-lobby   cpu: 9%/60%   2         10        2          7m2s
+
+NAME                          READY   UP-TO-DATE   AVAILABLE   AGE
+deployment.apps/astro-lobby   2/2     2            2           7m2s
+
+NAME                  TYPE           CLUSTER-IP     EXTERNAL-IP                                                               PORT(S)        AGE
+service/astro-lobby   LoadBalancer   172.20.37.60   ad2f71f2f060f4f908a56964440403a3-1551050820.us-east-1.elb.amazonaws.com   80:31645/TCP   7m2s
+

@@ -1,0 +1,22 @@
+$ node scripts/smoke-test.mjs http://ad2f71f2f060f4f908a56964440403a3-1551050820.us-east-1.elb.amazonaws.com
+Partida asignada: {
+  code: 'BMTRJ',
+  host: 'ec2-100-26-188-37.compute-1.amazonaws.com',
+  port: 7133
+}
+Anfitrión: true | Beto anfitrión: false | espectador: spectator
+Snapshots en 3 s -> Ana: 73, Beto: 66, espectador: 60
+Estado: playing, oleada 1, jugadores 2, enemigos 1, balas 8, RTT 109 ms
+Posiciones: Ana@(20,540) pts=0  Beto@(780,540) pts=100
+Partidas listadas para espectadores: 1
+
+OK: prueba de humo superada
+
+$ kubectl get gameservers -n astro
+NAME                      STATE       ADDRESS                                     PORT   NODE                         AGE
+astro-fleet-874lg-bmtrj   Allocated   ec2-100-26-188-37.compute-1.amazonaws.com   7133   ip-10-0-34-46.ec2.internal   116s
+astro-fleet-874lg-bsdmq   Ready       ec2-100-26-188-37.compute-1.amazonaws.com   7586   ip-10-0-34-46.ec2.internal   116s
+astro-fleet-874lg-lj7rc   Ready       ec2-100-26-188-37.compute-1.amazonaws.com   7417   ip-10-0-34-46.ec2.internal   117s
+astro-fleet-874lg-t2bp8   Ready       ec2-100-26-188-37.compute-1.amazonaws.com   7776   ip-10-0-34-46.ec2.internal   116s
+astro-fleet-874lg-xtp2n   Scheduled   ec2-100-26-188-37.compute-1.amazonaws.com   7520   ip-10-0-34-46.ec2.internal   2s
+astro-fleet-874lg-zcfwh   Ready       ec2-100-26-188-37.compute-1.amazonaws.com   7105   ip-10-0-34-46.ec2.internal   117s

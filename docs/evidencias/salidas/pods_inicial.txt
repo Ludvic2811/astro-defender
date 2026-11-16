@@ -1,0 +1,46 @@
+$ kubectl get pods -A -o wide --sort-by=.metadata.namespace
+NAMESPACE           NAME                                                              READY   STATUS    RESTARTS   AGE     IP            NODE                          NOMINATED NODE   READINESS GATES
+agones-system       agones-allocator-64bb978b9b-5s5xn                                 1/1     Running   0          15m     10.0.59.232   ip-10-0-42-33.ec2.internal    <none>           <none>
+agones-system       agones-allocator-64bb978b9b-lbrzn                                 1/1     Running   0          15m     10.0.61.218   ip-10-0-42-33.ec2.internal    <none>           <none>
+agones-system       agones-allocator-64bb978b9b-x4fjj                                 1/1     Running   0          15m     10.0.22.20    ip-10-0-8-145.ec2.internal    <none>           <none>
+agones-system       agones-controller-6f8bc6d4d8-ptcng                                1/1     Running   0          15m     10.0.21.197   ip-10-0-29-155.ec2.internal   <none>           <none>
+agones-system       agones-controller-6f8bc6d4d8-wtzt4                                1/1     Running   0          15m     10.0.53.109   ip-10-0-34-46.ec2.internal    <none>           <none>
+agones-system       agones-extensions-64895f7955-9rwqr                                1/1     Running   0          15m     10.0.62.247   ip-10-0-42-33.ec2.internal    <none>           <none>
+agones-system       agones-extensions-64895f7955-ll9fk                                1/1     Running   0          15m     10.0.10.145   ip-10-0-8-145.ec2.internal    <none>           <none>
+amazon-cloudwatch   amazon-cloudwatch-observability-controller-manager-6df5d752zkx2   1/1     Running   0          18m     10.0.37.16    ip-10-0-42-33.ec2.internal    <none>           <none>
+amazon-cloudwatch   cloudwatch-agent-2hws7                                            1/1     Running   0          18m     10.0.8.145    ip-10-0-8-145.ec2.internal    <none>           <none>
+amazon-cloudwatch   cloudwatch-agent-b6chc                                            1/1     Running   0          14m     10.0.34.46    ip-10-0-34-46.ec2.internal    <none>           <none>
+amazon-cloudwatch   cloudwatch-agent-gfsb7                                            1/1     Running   0          18m     10.0.42.33    ip-10-0-42-33.ec2.internal    <none>           <none>
+amazon-cloudwatch   cloudwatch-agent-tl6ll                                            1/1     Running   0          14m     10.0.29.155   ip-10-0-29-155.ec2.internal   <none>           <none>
+astro               astro-fleet-874lg-gvc6h                                           2/2     Running   0          65s     10.0.41.101   ip-10-0-34-46.ec2.internal    <none>           <none>
+astro               astro-fleet-874lg-m79qn                                           2/2     Running   0          4m53s   10.0.50.55    ip-10-0-34-46.ec2.internal    <none>           <none>
+astro               astro-fleet-874lg-t2bp8                                           2/2     Running   0          7m4s    10.0.37.136   ip-10-0-34-46.ec2.internal    <none>           <none>
+astro               astro-fleet-874lg-xtp2n                                           2/2     Running   0          5m10s   10.0.54.186   ip-10-0-34-46.ec2.internal    <none>           <none>
+astro               astro-fleet-874lg-zcfwh                                           2/2     Running   0          7m5s    10.0.42.26    ip-10-0-34-46.ec2.internal    <none>           <none>
+astro               astro-lobby-86c596cbd8-c8bcm                                      1/1     Running   0          7m3s    10.0.61.59    ip-10-0-42-33.ec2.internal    <none>           <none>
+astro               astro-lobby-86c596cbd8-cxmv9                                      1/1     Running   0          7m3s    10.0.0.213    ip-10-0-29-155.ec2.internal   <none>           <none>
+kube-system         aws-node-9t7sm                                                    2/2     Running   0          14m     10.0.34.46    ip-10-0-34-46.ec2.internal    <none>           <none>
+kube-system         aws-node-btbn8                                                    2/2     Running   0          19m     10.0.8.145    ip-10-0-8-145.ec2.internal    <none>           <none>
+kube-system         aws-node-jvshv                                                    2/2     Running   0          14m     10.0.29.155   ip-10-0-29-155.ec2.internal   <none>           <none>
+kube-system         aws-node-tnhff                                                    2/2     Running   0          19m     10.0.42.33    ip-10-0-42-33.ec2.internal    <none>           <none>
+kube-system         cluster-autoscaler-aws-cluster-autoscaler-5886485f95-mscjj        1/1     Running   0          15m     10.0.19.104   ip-10-0-8-145.ec2.internal    <none>           <none>
+kube-system         coredns-577755d76c-6tk8g                                          1/1     Running   0          18m     10.0.31.208   ip-10-0-8-145.ec2.internal    <none>           <none>
+kube-system         coredns-577755d76c-kmrk4                                          1/1     Running   0          18m     10.0.5.112    ip-10-0-8-145.ec2.internal    <none>           <none>
+kube-system         eks-pod-identity-agent-7cbzf                                      1/1     Running   0          14m     10.0.29.155   ip-10-0-29-155.ec2.internal   <none>           <none>
+kube-system         eks-pod-identity-agent-d9s4v                                      1/1     Running   0          19m     10.0.8.145    ip-10-0-8-145.ec2.internal    <none>           <none>
+kube-system         eks-pod-identity-agent-p8f69                                      1/1     Running   0          19m     10.0.42.33    ip-10-0-42-33.ec2.internal    <none>           <none>
+kube-system         eks-pod-identity-agent-tbb82                                      1/1     Running   0          14m     10.0.34.46    ip-10-0-34-46.ec2.internal    <none>           <none>
+kube-system         kube-proxy-8985w                                                  1/1     Running   0          14m     10.0.34.46    ip-10-0-34-46.ec2.internal    <none>           <none>
+kube-system         kube-proxy-clvkx                                                  1/1     Running   0          14m     10.0.29.155   ip-10-0-29-155.ec2.internal   <none>           <none>
+kube-system         kube-proxy-cswmf                                                  1/1     Running   0          18m     10.0.8.145    ip-10-0-8-145.ec2.internal    <none>           <none>
+kube-system         kube-proxy-qhhjp                                                  1/1     Running   0          18m     10.0.42.33    ip-10-0-42-33.ec2.internal    <none>           <none>
+kube-system         metrics-server-7c499d97b7-sljvf                                   1/1     Running   0          18m     10.0.52.202   ip-10-0-42-33.ec2.internal    <none>           <none>
+monitoring          kube-prometheus-stack-grafana-78c5f4fd97-bqzwp                    3/3     Running   0          16m     10.0.25.254   ip-10-0-8-145.ec2.internal    <none>           <none>
+monitoring          kube-prometheus-stack-kube-state-metrics-79d5d4bf7f-lcwfw         1/1     Running   0          16m     10.0.0.180    ip-10-0-8-145.ec2.internal    <none>           <none>
+monitoring          kube-prometheus-stack-operator-dfd5974b9-9j9sh                    1/1     Running   0          16m     10.0.32.37    ip-10-0-42-33.ec2.internal    <none>           <none>
+monitoring          kube-prometheus-stack-prometheus-node-exporter-9sxnp              1/1     Running   0          14m     10.0.29.155   ip-10-0-29-155.ec2.internal   <none>           <none>
+monitoring          kube-prometheus-stack-prometheus-node-exporter-rrcsz              1/1     Running   0          16m     10.0.8.145    ip-10-0-8-145.ec2.internal    <none>           <none>
+monitoring          kube-prometheus-stack-prometheus-node-exporter-s6f7n              1/1     Running   0          14m     10.0.34.46    ip-10-0-34-46.ec2.internal    <none>           <none>
+monitoring          kube-prometheus-stack-prometheus-node-exporter-vr7zm              1/1     Running   0          16m     10.0.42.33    ip-10-0-42-33.ec2.internal    <none>           <none>
+monitoring          prometheus-kube-prometheus-stack-prometheus-0                     2/2     Running   0          16m     10.0.57.40    ip-10-0-42-33.ec2.internal    <none>           <none>
+

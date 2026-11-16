@@ -3,6 +3,7 @@
 # Uso: bash scripts/evidencias/prueba-carga.sh <ramp|spike|spectators> <workers> "<VAR=valor ...>"
 # Ejemplo: bash scripts/evidencias/prueba-carga.sh ramp 6 "RAMP_USERS=1000 HOLD_SECONDS=180"
 set -euo pipefail
+export MSYS_NO_PATHCONV=1   # Git Bash en Windows: no convertir rutas del contenedor (/tmp/r)
 cd "$(dirname "$0")/../.."
 export LOAD_SHAPE="$1" WORKERS="${2:-6}" SHAPE_ENV="LOAD_SHAPE=$1 ${3:-}" MATCH_SECONDS="${MATCH_SECONDS:-300}" EXTRA_ARGS="${EXTRA_ARGS:-}"
 HOST=$(kubectl get svc astro-lobby -n astro -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')

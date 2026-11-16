@@ -3,7 +3,9 @@
 import { chromium } from 'playwright-core';
 
 const [, , salida, url, alto = '1000', espera = '2500', cred] = process.argv;
-const b = await chromium.launch({ channel: process.env.CHANNEL || 'msedge', headless: true });
+const b = await chromium.launch({ channel: process.env.CHANNEL || 'msedge', headless: true,
+  // Edge sin interfaz bloquea URLs http:// de los balanceadores si no se desactiva la mejora a HTTPS
+  args: ['--disable-features=HttpsUpgrades,HttpsFirstBalancedModeAutoEnable,HttpsFirstModeV2,EdgeTyposquattingProtection,msSmartScreenProtection'] });
 const ctx = await b.newContext({ viewport: { width: 1440, height: Number(alto) }, deviceScaleFactor: 1.5, locale: 'es-MX', colorScheme: 'light' });
 const p = await ctx.newPage();
 if (cred) {

@@ -46,8 +46,9 @@ spec:
           volumeMounts:
             - { name: script, mountPath: /mnt/locust }
           resources:
-            requests: { cpu: 600m, memory: 384Mi }
-            limits: { cpu: 1000m, memory: 768Mi }
+            # Medido: ~1.7m de CPU por bot. Con 10 workers caben 1,000 bots sin saturarse.
+            requests: { cpu: 700m, memory: 384Mi }
+            limits: { cpu: 1500m, memory: 768Mi }
       volumes:
         - name: script
           configMap: { name: locustfile }
@@ -70,7 +71,7 @@ spec:
           env ${SHAPE_ENV} locust -f /mnt/locust/locustfile.py --master --headless
           --host ${LOBBY_URL} --expect-workers ${WORKERS}
           --csv /tmp/r/${LOAD_SHAPE} --csv-full-history --html /tmp/r/${LOAD_SHAPE}.html
-          --reset-stats=false ${EXTRA_ARGS};
+          ${EXTRA_ARGS};
           echo LOCUST_TERMINADO; sleep 7200
       env:
         - { name: LOAD_SHAPE, value: "${LOAD_SHAPE}" }

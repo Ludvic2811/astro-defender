@@ -91,7 +91,10 @@ resource "helm_release" "agones" {
       maxPort    = 8000
     }
     agones = {
-      ping = { install = false }
+      # El sidecar del SDK usa ~3m de CPU medidos; el valor por defecto reserva 30m
+      # por GameServer. Bajarlo a 10m permite ~25 % más partidas por nodo.
+      image = { sdk = { cpuRequest = "10m", cpuLimit = "100m" } }
+      ping  = { install = false }
       allocator = {
         service = { serviceType = "ClusterIP" } # se asigna vía API de Kubernetes, no hace falta exponerlo
       }

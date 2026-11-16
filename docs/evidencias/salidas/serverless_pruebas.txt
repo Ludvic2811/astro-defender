@@ -1,0 +1,11 @@
+$ curl -X POST $API/scores -d '{"name":"Ana","score":48250,"wave":17,"mode":"coop","players":2}'
+{"id":"f9884100-26f9-4fe1-b7da-48336d8c873d","name":"Ana","score":48250,"wave":17,"mode":"coop","players":2,"createdAt":"2026-11-16T18:15:11.391Z"}
+$ curl -X POST $API/scores -d '{"name":"Beto","score":31900,"wave":12,"mode":"solo"}'
+{"id":"eb9a45a2-6a1c-4a5d-98df-55dd8ed4a2fd","name":"Beto","score":31900,"wave":12,"mode":"solo","players":1,"createdAt":"2026-11-16T18:15:12.278Z"}
+$ curl -X POST $API/scores -d '{"name":"","score":-5}'   # validación
+{"error":"Nombre requerido"}  HTTP 400
+$ curl "$API/scores?mode=coop&limit=5"
+{"mode":"coop","items":[{"name":"Ana","score":48250,"wave":17,"players":2,"createdAt":"2026-11-16T18:15:11.391Z"}]}
+
+$ curl http://ad2f71f2f060f4f908a56964440403a3-1551050820.us-east-1.elb.amazonaws.com/config.json   # el juego desplegado usa la API serverless
+{"leaderboardUrl":"https://yzjgimgj52.execute-api.us-east-1.amazonaws.com/scores","leaderboardBackend":"aws"}

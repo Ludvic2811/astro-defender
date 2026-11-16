@@ -8,7 +8,9 @@ import { chromium } from 'playwright-core';
 
 const URL = process.argv[2] || 'http://localhost:8080/';
 const OUT = process.argv[3] || '.';
-const browser = await chromium.launch({ channel: process.env.CHANNEL || 'msedge', headless: true });
+const browser = await chromium.launch({ channel: process.env.CHANNEL || 'msedge', headless: true,
+  // Edge sin interfaz bloquea URLs http:// de los balanceadores si no se desactiva la mejora a HTTPS
+  args: ['--disable-features=HttpsUpgrades,HttpsFirstBalancedModeAutoEnable,HttpsFirstModeV2,EdgeTyposquattingProtection,msSmartScreenProtection'] });
 const errores = [];
 const espera = (p, ms) => p.waitForTimeout(ms);
 
