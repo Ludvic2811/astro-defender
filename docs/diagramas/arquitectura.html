@@ -1,0 +1,53 @@
+<!doctype html><html lang="es"><meta charset="utf-8"><title>Arquitectura Astro Defender</title>
+<style>
+body{margin:0;background:#fff;font-family:'Century Gothic','Segoe UI',sans-serif;color:#0b0b0b}
+#d{width:1400px;height:800px;position:relative}
+.box{position:absolute;border:2px solid #2a78d6;border-radius:12px;background:#f3f8fe;padding:8px 10px;font-size:15px;line-height:1.3;box-sizing:border-box}
+.box b{display:block;font-size:16px;margin-bottom:2px}
+.box small{color:#52514e;font-size:13px}
+.grp{position:absolute;border:2px dashed #9aa4b1;border-radius:16px;box-sizing:border-box}
+.grp>span{position:absolute;top:-12px;left:16px;background:#fff;padding:0 8px;font-weight:700;font-size:15px;color:#52514e}
+.o{border-color:#eb6834;background:#fff5ef}.g{border-color:#1baf7a;background:#effaf5}.v{border-color:#6250d6;background:#f4f2fd}
+svg{position:absolute;inset:0}
+</style>
+<div id="d">
+<svg width="1400" height="800"><defs><marker id="a" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><path d="M0,0 L10,4 L0,8 z" fill="#52514e"/></marker></defs>
+<g stroke="#52514e" stroke-width="2" fill="none" marker-end="url(#a)">
+<path d="M170 300 L330 300"/>       <!-- jugadores -> LB -->
+<path d="M95 377 L95 600 L596 600"/> <!-- jugadores -> gameservers WS -->
+<path d="M470 300 L560 300"/>       <!-- LB -> lobby -->
+<path d="M700 330 L700 420"/>       <!-- lobby -> agones -->
+<path d="M790 455 L860 540"/>       <!-- agones -> fleet -->
+<path d="M50 377 L50 762 L1265 762 L1265 714"/> <!-- cliente -> API GW -->
+<path d="M1190 640 L1190 600"/>     <!-- api -> lambda -->
+<path d="M1190 520 L1190 480"/>     <!-- lambda -> dynamo -->
+<path d="M1000 120 L800 250"/>      <!-- ECR -> lobby -->
+<path d="M1105 152 L1105 600 L934 600"/>      <!-- ECR -> fleet -->
+<path d="M985 472 L900 536"/>       <!-- CA -> fleet -->
+<path d="M560 110 L940 110"/>       <!-- GitHub -> ECR -->
+</g>
+<g font-size="13" fill="#52514e" font-family="Century Gothic,Segoe UI">
+<text x="190" y="290">HTTP</text><text x="110" y="592">WebSocket directo al puerto del nodo (7000-8000)</text>
+<text x="710" y="380">GameServerAllocation</text><text x="1000" y="520">escala nodos</text><text x="600" y="100">docker push :sha</text><text x="520" y="754">Tabla de líderes: POST/GET /scores (HTTPS)</text>
+</g></svg>
+
+<div class="box" style="left:20px;top:250px;width:150px;height:125px"><b>Jugadores</b><small>Navegador · Phaser 3<br>1 a 4 pilotos<br>y espectadores</small></div>
+
+<div class="box o" style="left:390px;top:40px;width:170px;height:110px"><b>GitHub Actions</b><small>CI: pruebas, Docker,<br>Terraform validate<br>Deploy por OIDC</small></div>
+<div class="box o" style="left:940px;top:60px;width:190px;height:90px"><b>Amazon ECR</b><small>gameserver:sha<br>lobby:sha</small></div>
+
+<div class="grp" style="left:300px;top:200px;width:820px;height:470px"><span>AWS · VPC (2 zonas) · Amazon EKS 1.35</span></div>
+<div class="box" style="left:330px;top:260px;width:140px;height:80px"><b>Balanceador</b><small>Elastic Load<br>Balancing</small></div>
+<div class="box" style="left:560px;top:250px;width:280px;height:80px"><b>Lobby (Deployment)</b><small>web + matchmaker · HPA 2-10 pods</small></div>
+<div class="box v" style="left:600px;top:420px;width:200px;height:70px"><b>Agones 1.60</b><small>controlador + allocator</small></div>
+<div class="box" style="left:600px;top:540px;width:330px;height:110px"><b>Fleet astro-fleet (GameServers)</b><small>Node.js autoritativo 60 Hz · 4 pilotos/partida<br>FleetAutoscaler: colchón de 5 Ready<br>Nodos EC2 t3.large · Cluster Autoscaler 2-15</small></div>
+<div class="box v" style="left:330px;top:400px;width:220px;height:110px"><b>Monitoreo</b><small>Prometheus + Grafana<br>(kube-prometheus-stack)<br>Container Insights</small></div>
+<div class="box v" style="left:880px;top:400px;width:210px;height:70px"><b>Cluster Autoscaler</b><small>añade / quita nodos</small></div>
+
+<div class="grp" style="left:1150px;top:380px;width:230px;height:400px"><span>Serverless</span></div>
+<div class="box g" style="left:1170px;top:640px;width:190px;height:70px"><b>API Gateway</b><small>HTTP API</small></div>
+<div class="box g" style="left:1170px;top:530px;width:190px;height:70px"><b>AWS Lambda</b><small>Node.js 22</small></div>
+<div class="box g" style="left:1170px;top:410px;width:190px;height:70px"><b>DynamoDB</b><small>on-demand · GSI ByMode</small></div>
+<div class="box g" style="left:1170px;top:250px;width:190px;height:90px"><b>CloudWatch</b><small>tablero, alarma,<br>presupuesto (Budgets)</small></div>
+<div class="box o" style="left:20px;top:40px;width:250px;height:110px"><b>Terraform</b><small>VPC, EKS, ECR, IAM/OIDC,<br>Helm (Agones, Prometheus),<br>Lambda, DynamoDB · estado S3</small></div>
+</div></html>

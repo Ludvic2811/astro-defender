@@ -1,0 +1,84 @@
+# Generador de carga Locust DENTRO del clúster (maestro + workers).
+# Evita el límite de ancho de banda de una computadora personal: los bots se
+# conectan al lobby por su URL pública y a los GameServers por la IP pública
+# del nodo, igual que un jugador real.
+# Lo usa scripts/evidencias/prueba-carga.sh, que sustituye ${LOBBY_URL},
+# ${LOAD_SHAPE} y ${WORKERS} y crea el ConfigMap con loadtest/locustfile.py.
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: loadtest
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: locust-master
+  namespace: loadtest
+spec:
+  selector: { app: locust-master }
+  ports:
+    - { name: comm, port: 5557 }
+    - { name: web, port: 8089 }
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: locust-worker
+  namespace: loadtest
+spec:
+  replicas: ${WORKERS}
+  selector:
+    matchLabels: { app: locust-worker }
+  template:
+    metadata:
+      labels: { app: locust-worker }
+    spec:
+      containers:
+        - name: locust
+          image: locustio/locust:2.47.0
+          command: ["sh", "-c"]
+          args:
+            - pip install -q websocket-client &&
+              env ${SHAPE_ENV} locust -f /mnt/locust/locustfile.py --worker --master-host locust-master
+          env:
+            - { name: LOAD_SHAPE, value: "${LOAD_SHAPE}" }
+            - { name: MATCH_SECONDS, value: "${MATCH_SECONDS}" }
+          volumeMounts:
+            - { name: script, mountPath: /mnt/locust }
+          resources:
+            requests: { cpu: 600m, memory: 384Mi }
+            limits: { cpu: 1000m, memory: 768Mi }
+      volumes:
+        - name: script
+          configMap: { name: locustfile }
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: locust-master
+  namespace: loadtest
+  labels: { app: locust-master }
+spec:
+  restartPolicy: Never
+  containers:
+    - name: locust
+      image: locustio/locust:2.47.0
+      command: ["sh", "-c"]
+      # Al terminar se queda vivo para poder copiar los CSV con kubectl cp
+      args:
+        - pip install -q websocket-client && mkdir -p /tmp/r &&
+          env ${SHAPE_ENV} locust -f /mnt/locust/locustfile.py --master --headless
+          --host ${LOBBY_URL} --expect-workers ${WORKERS}
+          --csv /tmp/r/${LOAD_SHAPE} --csv-full-history --html /tmp/r/${LOAD_SHAPE}.html
+          --reset-stats=false ${EXTRA_ARGS};
+          echo LOCUST_TERMINADO; sleep 7200
+      env:
+        - { name: LOAD_SHAPE, value: "${LOAD_SHAPE}" }
+      volumeMounts:
+        - { name: script, mountPath: /mnt/locust }
+      resources:
+        requests: { cpu: 300m, memory: 384Mi }
+        limits: { cpu: 1000m, memory: 768Mi }
+  volumes:
+    - name: script
+      configMap: { name: locustfile }

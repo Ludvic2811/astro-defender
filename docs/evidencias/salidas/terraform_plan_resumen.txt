@@ -1,0 +1,45 @@
+$ terraform init -backend-config=backend.hcl   # estado remoto en S3 con bloqueo (use_lockfile)
+$ terraform plan -var-file=env/dev.tfvars -out=plan.tfplan
+
+  + aws_apigatewayv2_api.leaderboard
+  + aws_apigatewayv2_integration.leaderboard
+  + aws_apigatewayv2_route.scores["GET /scores"]
+  + aws_apigatewayv2_route.scores["POST /scores"]
+  + aws_apigatewayv2_stage.default
+  + aws_budgets_budget.monthly[0]
+  + aws_cloudwatch_dashboard.main
+  + aws_cloudwatch_log_group.leaderboard
+  + aws_cloudwatch_metric_alarm.lambda_errors
+  + aws_dynamodb_table.scores
+  + aws_ecr_lifecycle_policy.repo["gameserver"]
+  + aws_ecr_lifecycle_policy.repo["lobby"]
+  + aws_ecr_repository.repo["gameserver"]
+  + aws_ecr_repository.repo["lobby"]
+  + aws_eks_pod_identity_association.cluster_autoscaler
+  + aws_iam_openid_connect_provider.github[0]
+  + aws_iam_role.cluster_autoscaler
+  + aws_iam_role.github_deploy[0]
+  + aws_iam_role.leaderboard
+  + aws_iam_role_policy.cluster_autoscaler
+  + aws_iam_role_policy.github_deploy[0]
+  + aws_iam_role_policy.leaderboard_dynamo
+  + aws_lambda_function.leaderboard
+  + aws_lambda_permission.apigw
+  + helm_release.agones
+  + helm_release.cluster_autoscaler
+  + helm_release.kube_prometheus_stack
+  + helm_release.metrics_server
+  + kubernetes_config_map.astro
+  + kubernetes_config_map.grafana_dashboard
+  + kubernetes_namespace.astro
+  + module.eks.aws_cloudwatch_log_group.this[0]
+  + module.eks.aws_eks_access_entry.this["cluster_creator"]
+  + module.eks.aws_eks_access_entry.this["github-actions"]
+  + module.eks.aws_eks_access_policy_association.this["cluster_creator_admin"]
+  + module.eks.aws_eks_access_policy_association.this["github-actions_astro"]
+  + module.eks.aws_eks_addon.before_compute["eks-pod-identity-agent"]
+  + module.eks.aws_eks_addon.before_compute["vpc-cni"]
+  + module.eks.aws_eks_addon.this["amazon-cloudwatch-observability"]
+  + module.eks.aws_eks_addon.this["coredns"]
+  ...
+Plan: 88 to add, 0 to change, 0 to destroy.

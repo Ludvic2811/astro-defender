@@ -1,0 +1,23 @@
+$ docker compose ps
+NAME                      IMAGE                   COMMAND                  SERVICE      CREATED         STATUS         PORTS
+videojuego-gameserver-1   videojuego-gameserver   "docker-entrypoint.s…"   gameserver   7 seconds ago   Up 6 seconds   0.0.0.0:7777->7777/tcp, [::]:7777->7777/tcp, 0.0.0.0:9100->9100/tcp, [::]:9100->9100/tcp
+videojuego-lobby-1        videojuego-lobby        "docker-entrypoint.s…"   lobby        7 seconds ago   Up 6 seconds   0.0.0.0:8080->8080/tcp, [::]:8080->8080/tcp
+
+$ docker images | grep astro
+REPOSITORY                             TAG         SIZE      CREATED
+videojuego-gameserver                  latest      249MB     12 seconds ago
+videojuego-lobby                       latest      259MB     12 seconds ago
+
+$ curl localhost:8080/healthz && curl localhost:7777/healthz
+ok
+ok
+
+$ node scripts/smoke-test.mjs
+Partida asignada: { code: 'LOCAL', host: 'localhost', port: 7777 }
+Anfitrión: true | Beto anfitrión: false | espectador: spectator
+Snapshots en 3 s -> Ana: 60, Beto: 60, espectador: 60
+Estado: playing, oleada 1, jugadores 2, enemigos 2, balas 6, RTT 3 ms
+Posiciones: Ana@(20,540) pts=0  Beto@(780,540) pts=0
+Partidas listadas para espectadores: 1
+
+OK: prueba de humo superada

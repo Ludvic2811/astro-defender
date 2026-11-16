@@ -1,0 +1,31 @@
+aws_lambda_function.leaderboard: Destroying... [id=astro-defender-leaderboard]
+aws_lambda_function.leaderboard: Destruction complete after 1s
+aws_lambda_function.leaderboard: Creating...
+aws_lambda_function.leaderboard: Creation complete after 6s [id=astro-defender-leaderboard]
+aws_lambda_permission.apigw: Creating...
+aws_apigatewayv2_integration.leaderboard: Creating...
+aws_cloudwatch_dashboard.main: Creating...
+aws_cloudwatch_metric_alarm.lambda_errors: Creating...
+aws_lambda_permission.apigw: Creation complete after 0s [id=AllowAPIGateway]
+aws_apigatewayv2_integration.leaderboard: Creation complete after 1s [id=cu1zz2d]
+aws_apigatewayv2_route.scores["GET /scores"]: Creating...
+aws_apigatewayv2_route.scores["POST /scores"]: Creating...
+aws_cloudwatch_dashboard.main: Creation complete after 1s [id=astro-defender]
+aws_cloudwatch_metric_alarm.lambda_errors: Creation complete after 1s [id=astro-defender-leaderboard-errors]
+aws_apigatewayv2_route.scores["GET /scores"]: Creation complete after 0s [id=cjpbtad]
+aws_apigatewayv2_route.scores["POST /scores"]: Creation complete after 0s [id=s2kjlck]
+
+Apply complete! Resources: 7 added, 0 changed, 1 destroyed.
+
+Outputs:
+
+cloudwatch_dashboard = "https://us-east-1.console.aws.amazon.com/cloudwatch/home?region=us-east-1#dashboards:name=astro-defender"
+cluster_name = "astro-defender"
+configure_kubectl = "aws eks update-kubeconfig --region us-east-1 --name astro-defender"
+ecr_gameserver = "************.dkr.ecr.us-east-1.amazonaws.com/astro-defender/gameserver"
+ecr_lobby = "************.dkr.ecr.us-east-1.amazonaws.com/astro-defender/lobby"
+game_url_command = "kubectl get svc astro-lobby -n astro -o jsonpath='{.status.loadBalancer.ingress[0].hostname}'"
+github_deploy_role_arn = "arn:aws:iam::************:role/astro-defender-github-deploy"
+grafana_url_command = "kubectl get svc kube-prometheus-stack-grafana -n monitoring -o jsonpath='{.status.loadBalancer.ingress[0].hostname}'"
+leaderboard_api_url = "https://yzjgimgj52.execute-api.us-east-1.amazonaws.com/scores"
+region = "us-east-1"

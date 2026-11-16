@@ -65,6 +65,6 @@ resource "aws_iam_role_policy" "github_deploy" {
 }
 
 output "github_deploy_role_arn" {
-  description = "Guárdalo como secreto AWS_ROLE_ARN en GitHub"
+  description = "Guárdalo como variable AWS_ROLE_ARN del repositorio en GitHub"
   value       = var.github_repository == "" ? null : aws_iam_role.github_deploy[0].arn
 }
