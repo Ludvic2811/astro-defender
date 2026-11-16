@@ -70,9 +70,10 @@ spec:
   policy:
     type: Buffer
     buffer:
-      # Colchón proporcional: 10 % del total de servidores siempre en Ready.
-      # Con un colchón fijo de 5, la primera rampa agotó los Ready en segundos.
-      bufferSize: "10%"
+      # Colchón proporcional: 25 % del total de servidores siempre en Ready.
+      # Medido: el colchón limita cuántas partidas arrancan en paralelo. Con 5 fijos
+      # fallaba el 75 % de las asignaciones; con 10 % entraban ~67 jugadores/min.
+      bufferSize: "25%"
       minReplicas: 5
       maxReplicas: 300
   sync:

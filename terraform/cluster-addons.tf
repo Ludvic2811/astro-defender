@@ -35,6 +35,9 @@ resource "helm_release" "kube_prometheus_stack" {
         serviceMonitorSelectorNilUsesHelmValues = false
         podMonitorSelectorNilUsesHelmValues     = false
         retention                               = "3d"
+        # Que el Cluster Autoscaler no retire el nodo de Prometheus al reducir:
+        # sin volumen persistente, se perdería el historial de las pruebas.
+        podMetadata = { annotations = { "cluster-autoscaler.kubernetes.io/safe-to-evict" = "false" } }
         resources = {
           requests = { cpu = "200m", memory = "512Mi" }
         }

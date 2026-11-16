@@ -1,0 +1,30 @@
+$ terraform apply plan.tfplan        # 1.ª ejecución (88 recursos)
+aws_ecr_repository.repo["gameserver"]  ✓ creado en 1s
+aws_apigatewayv2_api.leaderboard  ✓ creado en 1s
+aws_iam_openid_connect_provider.github[0]  ✓ creado en 1s
+aws_ecr_repository.repo["lobby"]  ✓ creado en 1s
+aws_budgets_budget.monthly[0]  ✓ creado en 11s
+module.vpc.aws_vpc.this[0]  ✓ creado en 14s
+aws_dynamodb_table.scores  ✓ creado en 25s
+module.eks.aws_eks_cluster.this[0]  ✓ creado en 10m58s
+module.eks.aws_iam_openid_connect_provider.oidc_provider[0]  ✓ creado en 1s
+helm_release.metrics_server  ✓ creado en 39s
+helm_release.kube_prometheus_stack  ✓ creado en 2m37s
+helm_release.cluster_autoscaler  ✓ creado en 13s
+helm_release.agones  ✓ creado en 1m50s
+  … la red local perdió DNS al final: el estado quedó en S3 y se completó con un 2.º apply
+
+$ terraform apply -var-file=env/dev.tfvars   # 2.ª ejecución
+Apply complete! Resources: 7 added, 0 changed, 1 destroyed.
+
+$ terraform output
+cloudwatch_dashboard = "https://us-east-1.console.aws.amazon.com/cloudwatch/home?region=us-east-1#dashboards:name=astro-defender"
+cluster_name = "astro-defender"
+configure_kubectl = "aws eks update-kubeconfig --region us-east-1 --name astro-defender"
+ecr_gameserver = "************.dkr.ecr.us-east-1.amazonaws.com/astro-defender/gameserver"
+ecr_lobby = "************.dkr.ecr.us-east-1.amazonaws.com/astro-defender/lobby"
+game_url_command = "kubectl get svc astro-lobby -n astro -o jsonpath='{.status.loadBalancer.ingress[0].hostname}'"
+github_deploy_role_arn = "arn:aws:iam::************:role/astro-defender-github-deploy"
+grafana_url_command = "kubectl get svc kube-prometheus-stack-grafana -n monitoring -o jsonpath='{.status.loadBalancer.ingress[0].hostname}'"
+leaderboard_api_url = "https://yzjgimgj52.execute-api.us-east-1.amazonaws.com/scores"
+region = "us-east-1"

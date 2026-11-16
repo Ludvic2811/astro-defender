@@ -1,0 +1,38 @@
+# Sobreaprovisionamiento de nodos (práctica recomendada para servidores de juego).
+#
+# Problema medido en la primera rampa: cuando el colchón de GameServers Ready se
+# agota, los nuevos pods esperan a que el Cluster Autoscaler arranque un nodo EC2
+# (~70-90 s) y las asignaciones del lobby fallan por tiempo de espera.
+#
+# Solución: pods "pause" de prioridad negativa que reservan capacidad libre.
+# Cuando llega un GameServer, el planificador desaloja estos pods al instante y
+# el GameServer arranca en segundos; los pods "pause" quedan Pending y son ellos
+# los que esperan el nodo nuevo que pide el Cluster Autoscaler.
+apiVersion: scheduling.k8s.io/v1
+kind: PriorityClass
+metadata:
+  name: sobreaprovisionamiento
+value: -10
+globalDefault: false
+description: "Reserva de capacidad que se desaloja ante cualquier pod real"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sobreaprovisionamiento
+  namespace: astro
+spec:
+  replicas: 2                 # ~2 nodos t3.large de margen (~50 partidas)
+  selector:
+    matchLabels: { app: sobreaprovisionamiento }
+  template:
+    metadata:
+      labels: { app: sobreaprovisionamiento }
+    spec:
+      priorityClassName: sobreaprovisionamiento
+      terminationGracePeriodSeconds: 0
+      containers:
+        - name: pause
+          image: registry.k8s.io/pause:3.10
+          resources:
+            requests: { cpu: 1400m, memory: 512Mi }

@@ -9,6 +9,7 @@ import os
 import sys
 
 import matplotlib
+from analizar import curva_ccu_p95  # noqa: E402
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt  # noqa: E402
 
@@ -94,14 +95,14 @@ def curva_ccu(carpetas, salida):
     """CCU frente a latencia p95: cada punto es una ventana de Locust."""
     fig, ax = plt.subplots(figsize=(8.6, 4.2))
     for (prueba, carpeta), color in zip(carpetas, [C1, C2, C3]):
-        rtt, agg = locust_hist(carpeta, prueba)
-        if not rtt:
+        pts = curva_ccu_p95(prueba)
+        if not pts:
             continue
-        x, y = serie(rtt, "User Count", "95%")
+        x, y = [c for c, _ in pts], [l for _, l in pts]
         ax.scatter(x, y, s=22, color=color, alpha=0.75, label={"ramp": "Rampa", "spike": "Pico", "spectators": "Espectadores"}.get(prueba, prueba), edgecolors=SURF, linewidths=0.6)
     ax.axhline(80, color=TXT2, linewidth=1, linestyle=":")
     ax.text(ax.get_xlim()[0], 82, " meta 80 ms", color=TXT2, fontsize=8, va="bottom")
-    ax.set_xlabel("Usuarios concurrentes (CCU)"); ax.set_ylabel("RTT p95 (ms)")
+    ax.set_xlabel("Jugadores conectados (CCU, Prometheus)"); ax.set_ylabel("RTT p95 jugador↔servidor (ms)")
     ax.set_title("Curva CCU vs. latencia p95"); ax.legend(loc="upper left", fontsize=8)
     fig.tight_layout(); fig.savefig(salida, dpi=170); plt.close(fig)
 

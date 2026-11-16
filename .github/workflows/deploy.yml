@@ -87,6 +87,7 @@ jobs:
           envsubst '${GAMESERVER_IMAGE}' < k8s/gameserver-fleet.yaml | kubectl apply -f -
           envsubst '${LOBBY_IMAGE}' < k8s/lobby.yaml | kubectl apply -f -
           kubectl apply -f k8s/monitoring.yaml
+          kubectl apply -f k8s/overprovisioning.yaml
           kubectl rollout status deployment/astro-lobby -n astro --timeout=300s
 
       - name: Estado y URL pública

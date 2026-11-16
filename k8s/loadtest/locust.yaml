@@ -32,6 +32,7 @@ spec:
   template:
     metadata:
       labels: { app: locust-worker }
+      annotations: { cluster-autoscaler.kubernetes.io/safe-to-evict: "false" }
     spec:
       containers:
         - name: locust
@@ -59,6 +60,7 @@ metadata:
   name: locust-master
   namespace: loadtest
   labels: { app: locust-master }
+  annotations: { cluster-autoscaler.kubernetes.io/safe-to-evict: "false" }
 spec:
   restartPolicy: Never
   containers:

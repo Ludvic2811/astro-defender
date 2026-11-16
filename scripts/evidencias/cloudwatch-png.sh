@@ -11,5 +11,5 @@ WIDGET=$(cat <<JSON
 JSON
 )
 aws cloudwatch get-metric-widget-image --region "${AWS_REGION:-us-east-1}" --metric-widget "$WIDGET" \
-  --output-format png --query MetricWidgetImage --output text | base64 -d > "$OUT"
+  --output-format png --query MetricWidgetImage --output text | tr -d '\r\n' | base64 -d > "$OUT"
 echo "CloudWatch -> $OUT"
