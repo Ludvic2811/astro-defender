@@ -1,0 +1,4 @@
+Method,Name,Error,Occurrences,First Seen,Last Seen
+POST,/api/match (rápida),"CatchResponseError('500: {""error"":""timeout""}')",847,2026-11-16T18:43:43Z,2026-11-16T18:44:43Z
+WS,rechazo (sala llena),Exception('full'),788,2026-11-16T18:33:15Z,2026-11-16T18:46:33Z
+POST,/api/match (rápida),"CatchResponseError('503: {""error"":""No hay servidores de juego disponibles. Intenta de nuevo en unos segundos.""}')",7448,2026-11-16T18:33:37Z,2026-11-16T18:47:24Z

@@ -1,0 +1,89 @@
+{
+  "precios": {
+    "eks_h": 0.1,
+    "t3large_h": 0.0832,
+    "t3small_h": 0.0208,
+    "ipv4_h": 0.005,
+    "ebs_gb_mes": 0.08,
+    "elb_h": 0.025,
+    "egress_gb": 0.09,
+    "lambda_req_m": 0.2,
+    "lambda_gb_s": 1.66667e-05,
+    "apigw_req_m": 1.0,
+    "ddb_rru_m": 0.125,
+    "ddb_wru_m": 0.625
+  },
+  "tabla": [
+    [
+      "Reposo (sin jugadores)",
+      "2",
+      "0.32",
+      "-",
+      "Plano de control EKS, 2 nodos y balanceador del juego"
+    ],
+    [
+      "Capacidad medida (p95 < 80 ms)",
+      "10",
+      "1.04",
+      "0.0014",
+      "~750 CCU con 14 nodos activos, menos 4 dedicados a Locust"
+    ],
+    [
+      "Pico medido (925 CCU)",
+      "16",
+      "1.58",
+      "0.0017",
+      "20 nodos, menos 4 de Locust; p95 ya sobre 80 ms"
+    ],
+    [
+      "1,000 CCU (proyección)",
+      "16",
+      "1.58",
+      "0.0016",
+      "75 CCU por nodo de juego + 2 de sistema"
+    ],
+    [
+      "10,000 CCU (proyección)",
+      "136",
+      "12.43",
+      "0.0012",
+      "Requiere ampliar la cuota de vCPU"
+    ]
+  ],
+  "serverless_millon": 1.4463333760000001,
+  "ec2_mes": 19.474,
+  "kbps_por_espectador": 98.0,
+  "egress_20k_gb_h": 882.0,
+  "egress_20k_usd_h": 79.38,
+  "texto_capacidad": "Capacidad máxima medida: la curva CCU contra RTT p95 se mantiene plana (10-40 ms) hasta ~650 jugadores y cruza la meta de 80 ms alrededor de 750 jugadores concurrentes, con 14 nodos activos: ~54 jugadores por nodo, o ~75 por nodo de juego si se descuentan los 4 nodos de Locust. El pico llegó a 925 jugadores en 239 partidas, pero ya con p95 de ~190 ms. En ese tramo el nodo más cargado estaba entre 88 y 95 % de CPU (la programación Packed llena cada nodo) y el tick p99 llegó a 26.9 ms, por encima del presupuesto de 16.7 ms a 60 Hz; los generadores de Locust llegaron a 0.73 núcleos, cerca de su límite, así que una parte de la latencia puede venir de ellos.",
+  "texto_reaccion": "Tiempo de reacción medido desde el inicio del pico: FleetAutoscaler 18 s (muestras cada 15 s), HPA del lobby 48 s (de 2 a 10 pods), primeros pods pendientes 48 s y primer nodo EC2 nuevo 138 s; luego el Cluster Autoscaler agregó varios nodos de golpe (de 10 a 20). El CCU llegó al 90 % de su máximo a los 243 s. En la primera rampa, con un colchón fijo de 5 servidores, falló el 75 % de las solicitudes de partida; con colchón de 10 % entraban ~90 jugadores por minuto y con 25 % más reserva de nodos, ~250 por minuto.",
+  "texto_espectadores": "Espectadores: con 500 espectadores reales cada conexión consumió ~98 kbps de instantáneas. Extrapolando a 20,000 espectadores se necesitan ~1.96 Gbps (882 GB por hora, unos US$79 por hora de salida a Internet). Como cada partida admite 4 pilotos, 20,000 espectadores repartidos en 250 partidas son 80 por sala; conviene un relé o una CDN de instantáneas para no cargar al servidor de la partida. Un stream HLS de 4,500 kbps costaría unas 46 veces más ancho de banda (en este proyecto no se implementó HLS).",
+  "texto_costos": "El costo por jugador es bajo porque una partida de 4 pilotos usa ~21-38 milicores de CPU. El mayor riesgo de costo no es el cómputo sino la salida de datos de los espectadores y dejar el clúster encendido: por eso hay un presupuesto con alertas y la infraestructura se destruye al terminar.",
+  "recomendaciones": [
+    [
+      "Colchón proporcional y reserva de nodos: ",
+      "un FleetAutoscaler con 20-25 % y pods de sobreaprovisionamiento evitan que las asignaciones esperen al arranque de un nodo EC2."
+    ],
+    [
+      "Holgura de CPU por nodo: ",
+      "subir la solicitud de CPU por GameServer a ~70m (o limitar partidas por nodo) para que la programación Packed no lleve nodos al 95 % y el tick p99 se quede bajo 16.7 ms."
+    ],
+    [
+      "Capacidad atómica por partida: ",
+      "usar Counters de Agones en la asignación para que dos jugadores no tomen el último lugar de la misma sala (se midieron rechazos por «sala llena»)."
+    ],
+    [
+      "Límites de cuenta: ",
+      "pedir con anticipación más vCPU para EC2 (se subió de 32 a 64) y más concurrencia de Lambda (la cuenta tiene 10)."
+    ],
+    [
+      "Persistencia del monitoreo: ",
+      "dar volumen persistente a Prometheus; al retirar un nodo se perdió parte del historial del primer intento."
+    ],
+    [
+      "Espectadores a escala: ",
+      "servir las instantáneas desde un relé o CDN en lugar del servidor de la partida."
+    ]
+  ],
+  "conclusion": "Astro Defender quedó desplegado de punta a punta con infraestructura como código, CI/CD con credenciales temporales, una flota de Agones que escala en tres capas y una tabla de líderes serverless probada bajo carga. Con la configuración probada la plataforma sostiene ~750 jugadores con latencia p95 bajo 80 ms y absorbe un pico de 1,000 en unos 4 minutos. El factor decisivo para un lanzamiento es anticipar la capacidad: colchón de servidores, reserva de nodos, holgura de CPU por nodo y cuotas de la cuenta."
+}

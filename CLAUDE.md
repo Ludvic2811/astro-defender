@@ -48,7 +48,8 @@ Terraform: `cd terraform && terraform init -backend=false && terraform validate`
 2. **Nitidez HiDPI:** el lienzo se crea a 800×600 multiplicado por `S` (2 o 3, en `client/js/ui.js`) y cada escena hace `setupView(this)` para que su cámara aplique ese zoom. Las coordenadas de la interfaz siguen siendo 0-800 × 0-600. Las texturas de `textures.js` se dibujan a `TS`× y se colocan con `fitSprite()`.
 3. **Los dibujos del equipo son requisito de la materia.** No sustituirlos por arte generado. Para reprocesarlos: `python scripts/procesar_dibujos.py` (necesita `pillow numpy scipy`).
 4. **Las texturas se generan por código**, no se descargan. El único recurso externo es Phaser por CDN y las fuentes de Google.
-5. **AWS no está desplegado.** La infraestructura está escrita y validada, pero crear el clúster cuesta dinero por hora. Ver el README antes de ejecutar `terraform apply`.
+5. **AWS se desplegó y se destruyó el 16-nov-2026.** Hoy no hay nada encendido; crear el clúster cuesta dinero por hora. Ver el README (sección *Despliegue en AWS*) antes de `terraform apply`. Las evidencias reales de ese día están en `docs/evidencias/` y no deben sustituirse por datos inventados.
+6. **Evidencias y entregables se generan con scripts** de `scripts/evidencias/` (capturas, métricas, gráficas, `generar-reporte.py`, `generar-presentacion.js`). El reporte debe quedar en máximo 6 páginas.
 
 ## Protocolo multijugador
 

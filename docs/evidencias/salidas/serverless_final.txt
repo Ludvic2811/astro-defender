@@ -1,0 +1,30 @@
+$ aws lambda get-function-configuration --function-name astro-defender-leaderboard --query '{Funcion:FunctionName,Runtime:Runtime,MemoriaMB:MemorySize,TimeoutS:Timeout,Estado:State,Modificada:LastModified}' --output table
+------------------------------------------------
+|           GetFunctionConfiguration           |
++-------------+--------------------------------+
+|  Estado     |  Active                        |
+|  Funcion    |  astro-defender-leaderboard    |
+|  MemoriaMB  |  256                           |
+|  Modificada |  2026-11-16T18:07:17.770+0000  |
+|  Runtime    |  nodejs22.x                    |
+|  TimeoutS   |  5                             |
++-------------+--------------------------------+
+
+$ aws apigatewayv2 get-apis --query 'Items[?Name==`astro-defender-leaderboard`].{Nombre:Name,Protocolo:ProtocolType,Endpoint:ApiEndpoint}' --output table
+-------------------------------------------------------------------------
+|                                GetApis                                |
++-----------+-----------------------------------------------------------+
+|  Endpoint |  https://yzjgimgj52.execute-api.us-east-1.amazonaws.com   |
+|  Nombre   |  astro-defender-leaderboard                               |
+|  Protocolo|  HTTP                                                     |
++-----------+-----------------------------------------------------------+
+
+$ aws dynamodb describe-table --table-name astro-defender-scores --query 'Table.{Tabla:TableName,Estado:TableStatus,Facturacion:BillingModeSummary.BillingMode,Elementos:ItemCount,Indices:length(GlobalSecondaryIndexes)}' --output table
+--------------------------------------------------------------------------------
+|                                 DescribeTable                                |
++-----------+---------+------------------+----------+--------------------------+
+| Elementos | Estado  |   Facturacion    | Indices  |          Tabla           |
++-----------+---------+------------------+----------+--------------------------+
+|  0        |  ACTIVE |  PAY_PER_REQUEST |  1       |  astro-defender-scores   |
++-----------+---------+------------------+----------+--------------------------+
+

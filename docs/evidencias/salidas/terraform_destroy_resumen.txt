@@ -1,0 +1,38 @@
+$ bash scripts/predestroy.sh   # borra Fleet, lobby y servicios LoadBalancer
+namespace "loadtest" deleted
+priorityclass.scheduling.k8s.io "sobreaprovisionamiento" deleted
+deployment.apps "sobreaprovisionamiento" deleted from astro namespace
+fleetautoscaler.autoscaling.agones.dev "astro-fleet-autoscaler" deleted from astro namespace
+fleet.agones.dev "astro-fleet" deleted from astro namespace
+serviceaccount "astro-lobby" deleted from astro namespace
+
+$ terraform destroy -var-file=env/dev.tfvars -auto-approve
+aws_budgets_budget.monthly[0]  ✓ eliminado en 1s
+module.vpc.aws_route.public_internet_gateway[0]  ✓ eliminado en 1s
+aws_lambda_function.leaderboard  ✓ eliminado en 1s
+aws_ecr_repository.repo["lobby"]  ✓ eliminado en 1s
+aws_ecr_repository.repo["gameserver"]  ✓ eliminado en 1s
+aws_dynamodb_table.scores  ✓ eliminado en 14s
+helm_release.agones  ✓ eliminado en 4m58s
+module.vpc.aws_internet_gateway.this[0]  ✓ eliminado en 12m58s
+module.eks.aws_eks_cluster.this[0]  ✓ eliminado en 3m26s
+module.vpc.aws_vpc.this[0]  ✓ eliminado en 8m36s
+Destroy complete! Resources: 88 destroyed.
+  (tiempo total: 13:13:11 → 13:52:25)
+
+  nota: 13:43:37 Se eliminó a mano la ENI huérfana eni-06ef74b88165850c8 (aws-K8S, dejada por el CNI de VPC de un nodo ya terminado) que bloqueaba el borrado de la subred.
+  nota: 13:52:14 Se eliminó a mano el security group huérfano sg-00a9bac1a7b8e36ae (k8s-elb-..., creado por Kubernetes para el balanceador clásico del lobby) que impedía borrar la VPC.
+
+$ verificación de recursos restantes en us-east-1 (16-11-2026 13:52)
+EKS clústeres:        0
+EC2 en ejecución:     0
+Balanceadores ELB:    0 clásicos, 0 v2
+IPs elásticas:        0
+Volúmenes EBS:        0
+VPCs no default:      0
+Repos ECR:            0
+Tablas DynamoDB:      0
+Funciones Lambda:     0
+APIs HTTP:            0
+Grupos de logs astro/containerinsights: 0 (había 2 vacíos creados por Container Insights; se borraron)
+Bucket de estado S3 (se conserva a propósito, ~KB): astro-defender-tfstate-********

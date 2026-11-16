@@ -1,0 +1,6 @@
+$ terraform plan -var-file=env/dev.tfvars -detailed-exitcode   # detección de drift
+  # helm_release.kube_prometheus_stack will be updated in-place
+Plan: 0 to add, 1 to change, 0 to destroy.
+exit=2
+# Único cambio pendiente: anotación safe-to-evict de Prometheus agregada al código durante las pruebas;
+# se aplicó a mano con kubectl annotate para no reiniciar Prometheus. No hay drift en la infraestructura.

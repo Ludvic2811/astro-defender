@@ -1,0 +1,18 @@
+$ aws ec2 describe-instances --filters Name=tag:eks:cluster-name,Values=astro-defender Name=instance-state-name,Values=running --query 'Reservations[].Instances[].[InstanceId,InstanceType,Placement.AvailabilityZone,State.Name,LaunchTime]' --output table
+-------------------------------------------------------------------------------------------
+|                                    DescribeInstances                                    |
++----------------------+-----------+-------------+----------+-----------------------------+
+|  i-0659dbc1dbda4e45d |  t3.large |  us-east-1b |  running |  2026-11-16T18:59:06+00:00  |
+|  i-0c580e1ea6d743de6 |  t3.large |  us-east-1b |  running |  2026-11-16T18:59:17+00:00  |
+|  i-0ad7bcdef697e996f |  t3.large |  us-east-1b |  running |  2026-11-16T18:55:16+00:00  |
+|  i-019a3d3e8bf286b8e |  t3.large |  us-east-1b |  running |  2026-11-16T18:22:43+00:00  |
+|  i-0dd6c6fe7f1ecf108 |  t3.large |  us-east-1b |  running |  2026-11-16T18:55:26+00:00  |
+|  i-08254e11a7044c79c |  t3.large |  us-east-1b |  running |  2026-11-16T19:01:29+00:00  |
+|  i-0ebe46f4f021e72a6 |  t3.large |  us-east-1a |  running |  2026-11-16T19:08:22+00:00  |
+|  i-0b1b3c9f091f28df6 |  t3.large |  us-east-1a |  running |  2026-11-16T18:55:16+00:00  |
+|  i-046075fd3b736f9c0 |  t3.large |  us-east-1a |  running |  2026-11-16T18:55:16+00:00  |
+|  i-09b0088fa9c41eb75 |  t3.large |  us-east-1a |  running |  2026-11-16T18:24:22+00:00  |
+|  i-0887ef4903517f493 |  t3.large |  us-east-1a |  running |  2026-11-16T18:44:51+00:00  |
+|  i-0049d1b0caddb5cc5 |  t3.large |  us-east-1a |  running |  2026-11-16T18:59:06+00:00  |
++----------------------+-----------+-------------+----------+-----------------------------+
+

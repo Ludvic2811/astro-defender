@@ -98,7 +98,8 @@ s.addNotes('Guion (2:45-3:45). Recorrer el diagrama: el lobby detrás del balanc
 // 5. Kubernetes y Agones
 s = pres.addSlide({ masterName: 'CONTENIDO' });
 titulo(s, 'Kubernetes y Agones', 'Cada partida es un GameServer: Ready → Allocated → se apaga al vaciarse');
-foto(s, '19_agones_gameservers_inicial.png', 0.5, 1.75, 7.4, 4.3, 'kubectl: Fleet, FleetAutoscaler, GameServers y HPA (salida real)');
+foto(s, '19c_agones_allocated_aws.png', 0.5, 1.75, 7.4, 2.75, 'Salida real en AWS: un GameServer Allocated y el colchón se repone');
+foto(s, '19_agones_gameservers_inicial.png', 0.5, 4.95, 7.4, 1.75);
 foto(s, '26_aws_sala_cooperativa_agones.png', 8.2, 1.75, 4.6, 3.45, 'La sala LJ7RC es el GameServer …-lj7rc');
 vinetas(s, ['Recursos definidos: 50m CPU y 96 Mi por partida', 'RollingUpdate no toca partidas en curso'], 8.2, 5.65, 4.6, 1.2, 14);
 s.addNotes('Guion (3:45-4:45). El código de la sala que ve el jugador es el final del nombre del GameServer. Agones lleva el ciclo de vida; el servidor usa el SDK para marcarse Ready, publicar jugadores y apagarse al quedar vacío. Las actualizaciones no cortan partidas porque Agones solo reemplaza servidores Ready.');
@@ -107,7 +108,7 @@ s.addNotes('Guion (3:45-4:45). El código de la sala que ve el jugador es el fin
 s = pres.addSlide({ masterName: 'CONTENIDO' });
 titulo(s, 'Terraform y CI/CD', 'Infraestructura como código con estado remoto; despliegue con credenciales temporales (OIDC)');
 foto(s, '15_terraform_apply.png', 0.5, 1.75, 6.2, 3.25, 'terraform apply: 88 + 7 recursos, estado en S3');
-foto(s, '13b_github_actions_deploy.png', 6.9, 1.75, 5.9, 3.7, 'Deploy en verde: pruebas → ECR → EKS');
+foto(s, '13b_github_actions_deploy_recorte.png', 6.9, 1.75, 5.9, 2.75, 'Deploy en verde: pruebas → ECR → EKS (sin llaves, por OIDC)');
 vinetas(s, ['Variables por entorno: env/dev.tfvars y env/prod.tfvars', 'Imágenes etiquetadas con el commit (gameserver:<sha>)',
   'Presupuesto de US$20 con alertas por correo'], 0.5, 5.55, 6.2, 1.4, 14);
 s.addNotes('Guion (4:45-5:45). Terraform crea VPC, EKS, nodos, ECR, IAM, Agones, Prometheus, Lambda y DynamoDB, y también los destruye. El estado vive en S3 con bloqueo. Cada push a main corre pruebas, construye las imágenes, las sube a ECR con el hash del commit y actualiza la flota. GitHub no guarda llaves de AWS: usa OIDC.');
@@ -127,7 +128,7 @@ s.addNotes('Guion (5:45-6:30). La tabla de líderes no necesita un servidor ence
 // 8. Autoescalado y pruebas de carga (gráfica nativa de la flota en el pico)
 s = pres.addSlide({ masterName: 'CONTENIDO' });
 titulo(s, 'Autoescalado en tres capas', 'Pico de 1,000 jugadores simulados con Locust dentro del clúster');
-foto(s, '33_grafana_pico.png', 0.5, 1.75, 6.6, 5.0);
+foto(s, '33_grafana_pico_recorte.png', 0.5, 1.75, 6.6, 4.2, 'Grafana durante el pico: 925 jugadores, 222 partidas, 19 nodos, 10 pods del lobby');
 const serie = JSON.parse(fs.readFileSync(`${EV}/serie_pico.json`, 'utf8'));
 s.addChart(pres.charts.LINE, [
   { name: 'Allocated', labels: serie.min, values: serie.allocated },
@@ -136,25 +137,25 @@ s.addChart(pres.charts.LINE, [
   x: 7.3, y: 1.7, w: 5.5, h: 2.6, chartColors: [T.blue, T.orange], lineSize: 2, lineDataSymbol: 'none',
   showTitle: true, title: 'GameServers por estado', titleFontFace: FONT, titleFontSize: 13, titleColor: T.ink,
   showLegend: true, legendPos: 'b', legendFontFace: FONT, legendFontSize: 10,
-  catAxisLabelFontFace: FONT, catAxisLabelFontSize: 9, catAxisLabelColor: T.muted, catAxisTitle: 'minuto', showCatAxisTitle: true, catAxisTitleFontSize: 9,
+  catAxisLabelFontFace: FONT, catAxisLabelFontSize: 9, catAxisLabelColor: T.muted, catAxisLabelFrequency: 4, catAxisTitle: 'minuto', showCatAxisTitle: true, catAxisTitleFontSize: 9,
   valAxisLabelFontFace: FONT, valAxisLabelFontSize: 9, valAxisLabelColor: T.muted, valGridLine: { color: T.line, size: 0.5 }, catGridLine: { style: 'none' },
 });
 s.addChart(pres.charts.LINE, [{ name: 'Nodos EC2', labels: serie.min, values: serie.nodos }], {
   x: 7.3, y: 4.4, w: 5.5, h: 2.4, chartColors: [T.teal], lineSize: 2, lineDataSymbol: 'none',
   showTitle: true, title: 'Nodos EC2 (Cluster Autoscaler)', titleFontFace: FONT, titleFontSize: 13, titleColor: T.ink, showLegend: false,
-  catAxisLabelFontFace: FONT, catAxisLabelFontSize: 9, catAxisLabelColor: T.muted,
+  catAxisLabelFontFace: FONT, catAxisLabelFontSize: 9, catAxisLabelColor: T.muted, catAxisLabelFrequency: 4,
   valAxisLabelFontFace: FONT, valAxisLabelFontSize: 9, valAxisLabelColor: T.muted, valGridLine: { color: T.line, size: 0.5 }, catGridLine: { style: 'none' },
 });
-s.addNotes('Guion (6:30-8:00). DEMO DEL AUTOESCALADO: mostrar el tablero de Grafana (o esta captura si el clúster ya se destruyó). FleetAutoscaler mantiene un colchón de servidores Ready, el HPA multiplica los pods del lobby y el Cluster Autoscaler agrega nodos EC2. Señalar en la gráfica cómo sube Allocated y cómo los nodos llegan unos 70-90 s después.');
+s.addNotes('Guion (6:30-8:00). DEMO DEL AUTOESCALADO: mostrar el tablero de Grafana (o esta captura si el clúster ya se destruyó). FleetAutoscaler mantiene un colchón de servidores Ready, el HPA multiplica los pods del lobby y el Cluster Autoscaler agrega nodos EC2. Datos medidos desde el inicio del pico: FleetAutoscaler 18 s, HPA del lobby 48 s (de 2 a 10 pods), primer nodo EC2 138 s y luego varios nodos de golpe (10 a 20). El 90 % de los jugadores entró a los 243 s.');
 
 // 9. Resultados y costos
 s = pres.addSlide({ masterName: 'CONTENIDO' });
 titulo(s, 'Resultados y costos', 'Datos medidos en AWS el 16 de noviembre de 2026');
-dato(s, 0.5, 1.75, 2.9, n0(ccuMax), 'jugadores concurrentes (máx. medido)', T.blue);
-dato(s, 3.6, 1.75, 2.9, `${n0(mejor.rtt_p95_carga_max_ms)} ms`, 'RTT p95 con carga máxima (meta 80 ms)', T.teal);
-dato(s, 0.5, 3.25, 2.9, `${(mejor.tick_p99_max_ms || 0).toFixed(1)} ms`, 'tick p99 máximo (presupuesto 16.7 ms)', T.ink);
-dato(s, 3.6, 3.25, 2.9, `${n0(pico.t_primer_nodo_nuevo_s)} s`, 'hasta el primer nodo EC2 nuevo', T.orange);
-const fila1k = C.tabla[2];
+dato(s, 0.5, 1.75, 2.9, '~750', 'jugadores con RTT p95 bajo 80 ms (capacidad)', T.blue);
+dato(s, 3.6, 1.75, 2.9, n0(ccuMax), `jugadores en el pico (p95 ${n0(pico.rtt_p95_ccu_max_ms)} ms)`, T.teal);
+dato(s, 0.5, 3.25, 2.9, `${(rampa.tick_p99_mediana_ms || 0).toFixed(0)} / ${(pico.tick_p99_max_ms || 0).toFixed(0)} ms`, 'tick p99 mediana / máx. (presupuesto 16.7 ms)', T.ink);
+dato(s, 3.6, 3.25, 2.9, `${n0(pico.reac_nodo_s)} s`, 'hasta el primer nodo EC2 nuevo en el pico', T.orange);
+const fila1k = C.tabla.find((f) => f[0].startsWith('1,000'));
 dato(s, 0.5, 4.75, 2.9, `$${fila1k[2]}`, 'por hora para 1,000 jugadores', T.orange);
 dato(s, 3.6, 4.75, 2.9, `$${fila1k[3]}`, 'por jugador-hora', T.blue);
 const curva = JSON.parse(fs.readFileSync(`${EV}/serie_ccu_p95.json`, 'utf8'));
@@ -170,7 +171,7 @@ s.addChart(pres.charts.SCATTER, [
 });
 s.addText(`20,000 espectadores ≈ ${(20000 * C.kbps_por_espectador / 1e6).toFixed(2)} Gbps · ${n0(C.egress_20k_usd_h)} US$/h de salida`,
   { x: 6.8, y: 6.2, w: 6.0, h: 0.4, fontFace: FONT, fontSize: 13, color: T.ink2, margin: 0, isTextBox: true });
-s.addNotes('Guion (8:00-9:15). La latencia se mantiene plana conforme crecen los jugadores: el límite no es la red ni el servidor sino crear partidas a tiempo. Explicar el costo por hora y por jugador y la extrapolación a 20,000 espectadores (instantáneas por WebSocket, no video HLS).');
+s.addNotes('Guion (8:00-9:15). La capacidad es el punto donde la curva cruza 80 ms (~750 jugadores con 14 nodos). En el pico llegamos a 925 jugadores, pero ya con p95 de 190 ms y nodos al 90-95 % de CPU. Explicar el costo por hora y por jugador y la extrapolación a 20,000 espectadores (instantáneas por WebSocket, no video HLS).');
 
 // 10. Conclusiones
 s = pres.addSlide({ masterName: 'CONTENIDO' });
@@ -178,8 +179,9 @@ titulo(s, 'Conclusiones y siguientes pasos');
 vinetas(s, [
   'Todo se crea y se destruye con Terraform; despliegue automático por GitHub Actions',
   'Flota de Agones sana con recursos definidos y SDK integrado',
-  'Tres capas de autoescalado medidas: flota (5 s), lobby (15-30 s) y nodos (~70-90 s)',
-  'La primera rampa falló 75 % de asignaciones; con colchón proporcional y reserva de nodos mejoró',
+  `Tres capas medidas en el pico: flota ${n0(pico.reac_fleet_s)} s, lobby ${n0(pico.reac_hpa_s)} s y primer nodo ${n0(pico.reac_nodo_s)} s`,
+  'Colchón fijo de 5: 75 % de solicitudes fallidas; con 25 % y reserva de nodos, de ~90 a ~250 jugadores por minuto',
+  'Capacidad medida: ~750 jugadores con p95 bajo 80 ms; costo ~US$0.0016 por jugador-hora',
   'Siguientes pasos: Counters de Agones, más cuota de Lambda/EC2 y relé de espectadores',
 ], 0.5, 1.4, 7.4, 5.0, 17);
 foto(s, '09_pantalla_de_resultados.png', 8.3, 1.5, 4.5, 3.4, '¡Gracias! Preguntas');

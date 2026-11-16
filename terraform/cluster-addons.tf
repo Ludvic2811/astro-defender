@@ -20,6 +20,7 @@ resource "kubernetes_config_map" "astro" {
 
 # ------------------------------------------------------------------ Monitoreo
 resource "helm_release" "kube_prometheus_stack" {
+  # Ver la nota de depends_on en helm_release.agones
   name             = "kube-prometheus-stack"
   repository       = "https://prometheus-community.github.io/helm-charts"
   chart            = "kube-prometheus-stack"
@@ -52,7 +53,7 @@ resource "helm_release" "kube_prometheus_stack" {
     }
   })]
 
-  depends_on = [module.eks]
+  depends_on = [module.eks, module.vpc]
 }
 
 resource "kubernetes_config_map" "grafana_dashboard" {
@@ -109,7 +110,10 @@ resource "helm_release" "agones" {
     }
   })]
 
-  depends_on = [helm_release.kube_prometheus_stack, kubernetes_namespace.astro]
+  # module.vpc: al destruir, la VPC (y su Internet Gateway) se borra DESPUÉS de Agones.
+  # Sin esto, Terraform quitaba el gateway en paralelo, los nodos perdían Internet y el
+  # hook de limpieza de Agones no podía descargar su imagen (pasó el 16-nov-2026).
+  depends_on = [helm_release.kube_prometheus_stack, kubernetes_namespace.astro, module.vpc]
 }
 
 # ------------------------------------------------------------------ Cluster Autoscaler

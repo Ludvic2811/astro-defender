@@ -1,0 +1,13 @@
+$ verificación de recursos restantes en us-east-1 (16-11-2026 13:52)
+EKS clústeres:        0
+EC2 en ejecución:     0
+Balanceadores ELB:    0 clásicos, 0 v2
+IPs elásticas:        0
+Volúmenes EBS:        0
+VPCs no default:      0
+Repos ECR:            0
+Tablas DynamoDB:      0
+Funciones Lambda:     0
+APIs HTTP:            0
+Grupos de logs astro/containerinsights: 0 (había 2 vacíos creados por Container Insights; se borraron)
+Bucket de estado S3 (se conserva a propósito, ~KB): astro-defender-tfstate-********

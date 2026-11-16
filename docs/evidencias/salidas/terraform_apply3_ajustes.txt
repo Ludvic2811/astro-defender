@@ -18,28 +18,28 @@ module.eks.data.aws_partition.current[0]: Read complete after 0s [id=aws]
 module.eks.data.aws_iam_policy_document.assume_role_policy[0]: Reading...
 module.eks.data.aws_iam_policy_document.assume_role_policy[0]: Read complete after 0s [id=2830595799]
 module.eks.aws_cloudwatch_log_group.this[0]: Refreshing state... [id=/aws/eks/astro-defender/cluster]
-module.eks.module.kms.data.aws_caller_identity.current[0]: Read complete after 0s [id=633398616377]
+module.eks.module.kms.data.aws_caller_identity.current[0]: Read complete after 0s [id=************]
 module.eks.data.aws_caller_identity.current[0]: Reading...
-module.eks.module.eks_managed_node_group["general"].data.aws_caller_identity.current: Read complete after 0s [id=633398616377]
+module.eks.module.eks_managed_node_group["general"].data.aws_caller_identity.current: Read complete after 0s [id=************]
 module.eks.module.eks_managed_node_group["general"].data.aws_iam_policy_document.assume_role_policy[0]: Reading...
 module.eks.module.eks_managed_node_group["general"].data.aws_iam_policy_document.assume_role_policy[0]: Read complete after 0s [id=2560088296]
-aws_iam_openid_connect_provider.github[0]: Refreshing state... [id=arn:aws:iam::633398616377:oidc-provider/token.actions.githubusercontent.com]
-data.aws_caller_identity.current: Read complete after 1s [id=633398616377]
+aws_iam_openid_connect_provider.github[0]: Refreshing state... [id=arn:aws:iam::************:oidc-provider/token.actions.githubusercontent.com]
+data.aws_caller_identity.current: Read complete after 1s [id=************]
 aws_apigatewayv2_api.leaderboard: Refreshing state... [id=yzjgimgj52]
-module.eks.data.aws_caller_identity.current[0]: Read complete after 1s [id=633398616377]
-aws_budgets_budget.monthly[0]: Refreshing state... [id=633398616377:astro-defender-mensual]
+module.eks.data.aws_caller_identity.current[0]: Read complete after 1s [id=************]
+aws_budgets_budget.monthly[0]: Refreshing state... [id=************:astro-defender-mensual]
 data.aws_availability_zones.available: Read complete after 1s [id=us-east-1]
 aws_ecr_repository.repo["gameserver"]: Refreshing state... [id=astro-defender/gameserver]
 aws_ecr_repository.repo["lobby"]: Refreshing state... [id=astro-defender/lobby]
 module.eks.aws_iam_role.this[0]: Refreshing state... [id=astro-defender-cluster-20261116174653362400000003]
 module.eks.module.eks_managed_node_group["general"].aws_iam_role.this[0]: Refreshing state... [id=general-eks-node-group-20261116174652338100000001]
 module.eks.data.aws_iam_session_context.current[0]: Reading...
-module.eks.data.aws_iam_session_context.current[0]: Read complete after 0s [id=arn:aws:iam::633398616377:user/admin-25460334]
+module.eks.data.aws_iam_session_context.current[0]: Read complete after 0s [id=arn:aws:iam::************:user/admin-25460334]
 module.eks.data.aws_iam_policy_document.custom[0]: Reading...
 module.eks.data.aws_iam_policy_document.custom[0]: Read complete after 0s [id=513122117]
 aws_iam_role.github_deploy[0]: Refreshing state... [id=astro-defender-github-deploy]
 aws_apigatewayv2_stage.default: Refreshing state... [id=$default]
-module.eks.aws_iam_policy.custom[0]: Refreshing state... [id=arn:aws:iam::633398616377:policy/astro-defender-cluster-20261116174653338000000002]
+module.eks.aws_iam_policy.custom[0]: Refreshing state... [id=arn:aws:iam::************:policy/astro-defender-cluster-20261116174653338000000002]
 aws_iam_role_policy_attachment.leaderboard_logs: Refreshing state... [id=astro-defender-leaderboard-lambda-20261116174654168500000008]
 module.eks.aws_iam_role_policy_attachment.this["AmazonEKSVPCResourceController"]: Refreshing state... [id=astro-defender-cluster-20261116174653362400000003-2026111617465442570000000b]
 module.eks.aws_iam_role_policy_attachment.this["AmazonEKSClusterPolicy"]: Refreshing state... [id=astro-defender-cluster-20261116174653362400000003-20261116174654354000000009]
@@ -68,7 +68,7 @@ aws_lambda_permission.apigw: Refreshing state... [id=AllowAPIGateway]
 aws_apigatewayv2_integration.leaderboard: Refreshing state... [id=cu1zz2d]
 aws_cloudwatch_metric_alarm.lambda_errors: Refreshing state... [id=astro-defender-leaderboard-errors]
 module.eks.module.kms.aws_kms_alias.this["cluster"]: Refreshing state... [id=alias/eks/astro-defender]
-module.eks.aws_iam_policy.cluster_encryption[0]: Refreshing state... [id=arn:aws:iam::633398616377:policy/astro-defender-cluster-ClusterEncryption2026111617471717150000000f]
+module.eks.aws_iam_policy.cluster_encryption[0]: Refreshing state... [id=arn:aws:iam::************:policy/astro-defender-cluster-ClusterEncryption2026111617471717150000000f]
 module.vpc.aws_route.public_internet_gateway[0]: Refreshing state... [id=r-rtb-0f7c407621503d5cd1080289494]
 module.vpc.aws_route_table_association.public[1]: Refreshing state... [id=rtbassoc-0e8f9f44a06bd9671]
 module.vpc.aws_route_table_association.public[0]: Refreshing state... [id=rtbassoc-018693d349016111d]
@@ -96,22 +96,22 @@ module.eks.data.tls_certificate.this[0]: Reading...
 module.eks.data.aws_eks_addon_version.this["eks-pod-identity-agent"]: Reading...
 module.eks.data.aws_eks_addon_version.this["kube-proxy"]: Reading...
 module.eks.time_sleep.this[0]: Refreshing state... [id=2026-11-16T17:58:49Z]
-module.eks.aws_eks_access_entry.this["github-actions"]: Refreshing state... [id=astro-defender:arn:aws:iam::633398616377:role/astro-defender-github-deploy]
-module.eks.aws_eks_access_entry.this["cluster_creator"]: Refreshing state... [id=astro-defender:arn:aws:iam::633398616377:user/admin-25460334]
+module.eks.aws_eks_access_entry.this["github-actions"]: Refreshing state... [id=astro-defender:arn:aws:iam::************:role/astro-defender-github-deploy]
+module.eks.aws_eks_access_entry.this["cluster_creator"]: Refreshing state... [id=astro-defender:arn:aws:iam::************:user/admin-25460334]
 module.eks.module.eks_managed_node_group["general"].module.user_data.null_resource.validate_cluster_service_cidr: Refreshing state... [id=2978405669987639473]
 module.eks.module.eks_managed_node_group["general"].aws_launch_template.this[0]: Refreshing state... [id=lt-0efd8b073bef59bf3]
 module.eks.data.aws_eks_addon_version.this["amazon-cloudwatch-observability"]: Read complete after 0s [id=amazon-cloudwatch-observability]
 module.eks.module.eks_managed_node_group["general"].aws_eks_node_group.this[0]: Refreshing state... [id=astro-defender:general-20261116175857175000000016]
 module.eks.data.aws_eks_addon_version.this["vpc-cni"]: Read complete after 0s [id=vpc-cni]
 module.eks.data.tls_certificate.this[0]: Read complete after 0s [id=b1b539daa206035ae3c3e28288b0681fa1b462f3]
-module.eks.aws_iam_openid_connect_provider.oidc_provider[0]: Refreshing state... [id=arn:aws:iam::633398616377:oidc-provider/oidc.eks.us-east-1.amazonaws.com/id/0F41036C88831F6B17134EB0CECF5F9B]
+module.eks.aws_iam_openid_connect_provider.oidc_provider[0]: Refreshing state... [id=arn:aws:iam::************:oidc-provider/oidc.eks.us-east-1.amazonaws.com/id/0F41036C88831F6B17134EB0CECF5F9B]
 module.eks.data.aws_eks_addon_version.this["coredns"]: Read complete after 1s [id=coredns]
 module.eks.data.aws_eks_addon_version.this["eks-pod-identity-agent"]: Read complete after 1s [id=eks-pod-identity-agent]
 module.eks.data.aws_eks_addon_version.this["kube-proxy"]: Read complete after 1s [id=kube-proxy]
 module.eks.aws_eks_addon.before_compute["vpc-cni"]: Refreshing state... [id=astro-defender:vpc-cni]
 module.eks.aws_eks_addon.before_compute["eks-pod-identity-agent"]: Refreshing state... [id=astro-defender:eks-pod-identity-agent]
-module.eks.aws_eks_access_policy_association.this["github-actions_astro"]: Refreshing state... [id=astro-defender#arn:aws:iam::633398616377:role/astro-defender-github-deploy#arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy]
-module.eks.aws_eks_access_policy_association.this["cluster_creator_admin"]: Refreshing state... [id=astro-defender#arn:aws:iam::633398616377:user/admin-25460334#arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy]
+module.eks.aws_eks_access_policy_association.this["github-actions_astro"]: Refreshing state... [id=astro-defender#arn:aws:iam::************:role/astro-defender-github-deploy#arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy]
+module.eks.aws_eks_access_policy_association.this["cluster_creator_admin"]: Refreshing state... [id=astro-defender#arn:aws:iam::************:user/admin-25460334#arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy]
 module.eks.aws_eks_addon.this["amazon-cloudwatch-observability"]: Refreshing state... [id=astro-defender:amazon-cloudwatch-observability]
 module.eks.aws_eks_addon.this["coredns"]: Refreshing state... [id=astro-defender:coredns]
 module.eks.aws_eks_addon.this["kube-proxy"]: Refreshing state... [id=astro-defender:kube-proxy]
@@ -258,10 +258,10 @@ Outputs:
 cloudwatch_dashboard = "https://us-east-1.console.aws.amazon.com/cloudwatch/home?region=us-east-1#dashboards:name=astro-defender"
 cluster_name = "astro-defender"
 configure_kubectl = "aws eks update-kubeconfig --region us-east-1 --name astro-defender"
-ecr_gameserver = "633398616377.dkr.ecr.us-east-1.amazonaws.com/astro-defender/gameserver"
-ecr_lobby = "633398616377.dkr.ecr.us-east-1.amazonaws.com/astro-defender/lobby"
+ecr_gameserver = "************.dkr.ecr.us-east-1.amazonaws.com/astro-defender/gameserver"
+ecr_lobby = "************.dkr.ecr.us-east-1.amazonaws.com/astro-defender/lobby"
 game_url_command = "kubectl get svc astro-lobby -n astro -o jsonpath='{.status.loadBalancer.ingress[0].hostname}'"
-github_deploy_role_arn = "arn:aws:iam::633398616377:role/astro-defender-github-deploy"
+github_deploy_role_arn = "arn:aws:iam::************:role/astro-defender-github-deploy"
 grafana_url_command = "kubectl get svc kube-prometheus-stack-grafana -n monitoring -o jsonpath='{.status.loadBalancer.ingress[0].hostname}'"
 leaderboard_api_url = "https://yzjgimgj52.execute-api.us-east-1.amazonaws.com/scores"
 region = "us-east-1"

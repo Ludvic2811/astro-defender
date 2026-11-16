@@ -1,0 +1,2 @@
+# 13:43:37 Se eliminó a mano la ENI huérfana eni-06ef74b88165850c8 (aws-K8S, dejada por el CNI de VPC de un nodo ya terminado) que bloqueaba el borrado de la subred.
+# 13:52:14 Se eliminó a mano el security group huérfano sg-00a9bac1a7b8e36ae (k8s-elb-..., creado por Kubernetes para el balanceador clásico del lobby) que impedía borrar la VPC.

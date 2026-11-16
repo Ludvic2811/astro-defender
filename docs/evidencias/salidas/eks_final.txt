@@ -1,0 +1,29 @@
+$ aws eks describe-cluster --name astro-defender --query 'cluster.{Nombre:name,Version:version,Estado:status,Plataforma:platformVersion,Creado:createdAt}' --output table
+----------------------------------------------------
+|                  DescribeCluster                 |
++-------------+------------------------------------+
+|  Creado     |  2026-11-16T11:47:23.414000-06:00  |
+|  Estado     |  ACTIVE                            |
+|  Nombre     |  astro-defender                    |
+|  Plataforma |  eks.27                            |
+|  Version    |  1.35                              |
++-------------+------------------------------------+
+
+$ aws eks list-nodegroups --cluster-name astro-defender --output text
+NODEGROUPS	general-20261116175857175000000016
+
+$ kubectl get nodes -L node.kubernetes.io/instance-type,topology.kubernetes.io/zone
+NAME                          STATUS   ROLES    AGE     VERSION               INSTANCE-TYPE   ZONE
+ip-10-0-0-18.ec2.internal     Ready    <none>   26m     v1.35.9-eks-9adbfea   t3.large        us-east-1a
+ip-10-0-1-22.ec2.internal     Ready    <none>   12m     v1.35.9-eks-9adbfea   t3.large        us-east-1a
+ip-10-0-21-68.ec2.internal    Ready    <none>   47m     v1.35.9-eks-9adbfea   t3.large        us-east-1a
+ip-10-0-26-38.ec2.internal    Ready    <none>   16m     v1.35.9-eks-9adbfea   t3.large        us-east-1a
+ip-10-0-3-145.ec2.internal    Ready    <none>   3m22s   v1.35.9-eks-9adbfea   t3.large        us-east-1a
+ip-10-0-30-110.ec2.internal   Ready    <none>   16m     v1.35.9-eks-9adbfea   t3.large        us-east-1a
+ip-10-0-32-18.ec2.internal    Ready    <none>   48m     v1.35.9-eks-9adbfea   t3.large        us-east-1b
+ip-10-0-49-107.ec2.internal   Ready    <none>   12m     v1.35.9-eks-9adbfea   t3.large        us-east-1b
+ip-10-0-58-211.ec2.internal   Ready    <none>   12m     v1.35.9-eks-9adbfea   t3.large        us-east-1b
+ip-10-0-58-249.ec2.internal   Ready    <none>   16m     v1.35.9-eks-9adbfea   t3.large        us-east-1b
+ip-10-0-60-180.ec2.internal   Ready    <none>   16m     v1.35.9-eks-9adbfea   t3.large        us-east-1b
+ip-10-0-60-47.ec2.internal    Ready    <none>   10m     v1.35.9-eks-9adbfea   t3.large        us-east-1b
+

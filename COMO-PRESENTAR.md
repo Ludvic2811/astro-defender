@@ -55,42 +55,35 @@ Funciona hasta con 4 jugadores, más espectadores ilimitados.
 
 ---
 
-## 4. Guion sugerido para los 10 minutos
+## 4. Guion de los 10 minutos
 
-| Tiempo | Qué mostrar |
-|---|---|
-| 0:00–1:00 | **El juego funcionando.** Menú, los dibujos originales del equipo (nave, ovni, asteroide), y juegas 30 segundos. |
-| 1:00–2:30 | **Mecánicas.** Pantalla *Cómo jugar*: los 5 tipos de enemigo, poderes, combo, oleadas infinitas. Muestra un jefe y la elección de cartas. |
-| 2:30–4:00 | **Multijugador.** Dos ventanas (o un compañero) en la misma sala, y una tercera como espectador. Explica que el servidor es autoritativo: solo recibe los controles y envía 20 snapshots por segundo. |
-| 4:00–5:30 | **Arquitectura en la nube.** Abre `docs/ARQUITECTURA.md` y explica el diagrama: EKS, Agones, el lobby que pide servidores, Lambda + DynamoDB para la tabla de líderes. |
-| 5:30–7:00 | **Infraestructura como código.** Muestra la carpeta `terraform/` y los workflows en `.github/workflows/`: uno crea la infraestructura, otro despliega el juego. |
-| 7:00–8:30 | **Autoescalado y pruebas.** Explica los tres niveles de autoescalado y abre `docs/PRUEBAS.md`: rampa, pico de 1,000 jugadores y la extrapolación a 20,000 espectadores. |
-| 8:30–9:30 | **Monitoreo y costos.** El tablero de Grafana (`monitoring/`) y `docs/COSTOS.md`. |
-| 9:30–10:00 | **Cierre.** Qué aprendieron y qué sigue. |
+Usa la presentación `entregables/Presentacion_Astro_Defender.pptx`. El guion completo, con tiempos, frases y reparto entre integrantes, está en [entregables/Guion_exposicion.md](entregables/Guion_exposicion.md) y también en las notas del orador de cada diapositiva.
 
 ---
 
 ## 5. Qué decir si el profesor pregunta por AWS
 
-Sé honesto: **la infraestructura está escrita y validada, pero no desplegada**, porque el clúster cuesta unos USD 0.30 por hora y se destruye al terminar.
+**Sí se desplegó.** El 16 de noviembre de 2026:
 
-Puedes demostrar que el código es real así:
+- Terraform creó la infraestructura: EKS, Agones, Lambda, DynamoDB y lo demás.
+- GitHub Actions publicó el juego en ECR y EKS.
+- Se hicieron las pruebas con 1,000 jugadores y 500 espectadores simulados.
+- Al terminar se destruyó todo con `terraform destroy`, para no seguir pagando.
 
-```bash
-cd terraform
-terraform init -backend=false
-terraform validate     # dice "Success! The configuration is valid."
-terraform fmt -check -recursive
-```
+Pruebas de que fue real:
 
-Y mostrar las pruebas automáticas, que **sí** se ejecutan en cualquier computadora:
+- `docs/evidencias/`: capturas de Grafana, CloudWatch, GitHub Actions y salidas de `kubectl` y `aws`.
+- `loadtest/resultados/`: CSV y reportes HTML de Locust, y series de Prometheus.
+- El historial de *Actions* del repositorio, con los pipelines en verde.
+
+Si quieren ver el autoescalado en vivo, sigue la sección «Demo en vivo» del guion. Hay que desplegar unos 30 minutos antes, y cuesta alrededor de un dólar.
+
+Las pruebas automáticas también corren en cualquier computadora:
 
 ```bash
 npm test --prefix server      # 22 pruebas de la lógica del juego
 node scripts/balance.mjs 100 1 novato   # simulador de balance
 ```
-
-Si quieren desplegarlo de verdad antes de la presentación, los pasos están en el [README](README.md) (sección *Despliegue en AWS*). Toma unos 20 minutos crear todo y conviene destruirlo el mismo día.
 
 ---
 

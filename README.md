@@ -4,6 +4,15 @@ Videojuego espacial 2D de acción y supervivencia para navegador, individual o c
 
 > Proyecto final, Unidad 3: Cómputo en la Nube.
 
+**Estado (16 de noviembre de 2026):** se desplegó en AWS con Terraform y GitHub Actions, se probó con 1,000 jugadores y 500 espectadores simulados, y se destruyó al terminar. Las evidencias reales están en [docs/evidencias/](docs/evidencias/) y los resultados en [docs/PRUEBAS.md](docs/PRUEBAS.md).
+
+**Entregables** (carpeta [entregables/](entregables/)):
+
+- Reporte técnico (Word y PDF, 6 páginas)
+- Presentación (PowerPoint y PDF)
+- [Guion de exposición](entregables/Guion_exposicion.md)
+- [Validación contra la rúbrica](entregables/Validacion_rubrica.md)
+
 ## Contenido del repositorio
 
 | Carpeta | Qué contiene |
@@ -16,7 +25,10 @@ Videojuego espacial 2D de acción y supervivencia para navegador, individual o c
 | [k8s/](k8s/) | Fleet y FleetAutoscaler de Agones, despliegue del lobby, HPA y monitores de Prometheus |
 | [terraform/](terraform/) | VPC, EKS, nodos EC2, ECR, DynamoDB, Lambda, API Gateway, Agones, Prometheus/Grafana, Cluster Autoscaler y CloudWatch |
 | [.github/workflows/](.github/workflows/) | CI (pruebas), Deploy (ECR + EKS) e Infraestructura (Terraform plan/apply/destroy) |
-| [loadtest/](loadtest/) | Pruebas de carga con Locust: rampa, pico de 1,000 jugadores y 500 espectadores |
+| [loadtest/](loadtest/) | Pruebas de carga con Locust (rampa, pico de 1,000, 500 espectadores y tabla de líderes) y sus resultados reales |
+| [k8s/loadtest/](k8s/loadtest/) | Locust dentro del clúster (maestro + workers) |
+| [scripts/evidencias/](scripts/evidencias/) | Captura automática de evidencias, extracción de métricas, gráficas, reporte y presentación |
+| [entregables/](entregables/) | Reporte, presentación, guion y validación de la rúbrica |
 | [monitoring/](monitoring/) | Tablero de Grafana |
 | [docs/](docs/) | [Arquitectura](docs/ARQUITECTURA.md), [pruebas y autoescalado](docs/PRUEBAS.md) y [costos](docs/COSTOS.md) |
 | [COMO-PRESENTAR.md](COMO-PRESENTAR.md) | Cómo llevar el proyecto a otra computadora y guion para la demostración |
@@ -83,23 +95,46 @@ El script recorta cada dibujo, quita el papel y los adornos, endereza la nave y 
 
 ## Despliegue en AWS
 
-1. **Requisitos:** cuenta de AWS, AWS CLI configurado y un repositorio en GitHub.
-2. **Bucket del estado de Terraform** (una sola vez):
-   ```bash
-   bash scripts/bootstrap-state.sh astro-defender-tfstate-<equipo> us-east-1
-   ```
-3. **Secretos en GitHub** (*Settings → Secrets and variables → Actions*):
-   - `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY` y, si usas credenciales temporales, `AWS_SESSION_TOKEN`
-   - `TF_STATE_BUCKET`: el bucket del paso 2
-   - `GRAFANA_ADMIN_PASSWORD`
-   - Variables opcionales: `AWS_REGION` (por defecto `us-east-1`) y `NODE_MAX`.
-   - Crea también un *environment* llamado `production`. Puedes exigir aprobación manual en él.
-4. **Crear la infraestructura:** *Actions → Infraestructura (Terraform) → Run workflow → apply*. Tarda unos 20 minutos.
-5. **Publicar el juego:** *Actions → Deploy → Run workflow*, o simplemente haz *push* a `main`. El resumen del job muestra la URL pública.
-6. **Grafana:** `kubectl get svc kube-prometheus-stack-grafana -n monitoring` (usuario `admin`). El tablero se llama *Astro Defender*.
-7. **Al terminar:** *Infraestructura → destroy*, para no seguir pagando.
+Así se desplegó el 16 de noviembre de 2026. Requisitos: Terraform ≥ 1.10, AWS CLI v2, kubectl y una cuenta de AWS.
 
-Para hacerlo desde tu computadora: `cd terraform && cp backend.hcl.example backend.hcl && cp terraform.tfvars.example terraform.tfvars`, edita ambos archivos y ejecuta `terraform init -backend-config=backend.hcl && terraform apply`.
+1. **Credenciales.** Si usas `aws login`, agrega un perfil que Terraform entienda en `~/.aws/config`:
+   ```ini
+   [profile astro-tf]
+   region = us-east-1
+   credential_process = aws configure export-credentials --profile default --format process
+   ```
+   Luego `export AWS_PROFILE=astro-tf`.
+2. **Bucket del estado** (una sola vez): `bash scripts/bootstrap-state.sh astro-defender-tfstate-<sufijo> us-east-1`, y copia lo que imprime en `terraform/backend.hcl`.
+3. **Variables** (`terraform/terraform.tfvars`, no se sube a Git):
+   ```hcl
+   grafana_admin_password = "..."
+   budget_email           = "equipo@ejemplo.com"   # alerta de presupuesto de US$20
+   github_repository      = "usuario/astro-defender" # crea el rol OIDC para GitHub Actions
+   github_oidc_sub_prefix = ""  # si el repo usa sujetos inmutables: gh api repos/USUARIO/REPO/actions/oidc/customization/sub
+   ```
+4. **Crear:**
+   ```bash
+   cd terraform
+   terraform init -backend-config=backend.hcl
+   terraform plan -var-file=env/dev.tfvars
+   terraform apply -var-file=env/dev.tfvars
+   ```
+   Tarda ~20 min. Revisa antes la cuota de vCPU: con 20 nodos t3.large se necesitan 40 vCPU.
+5. **GitHub** (*Settings → Secrets and variables → Actions → Variables*):
+   - `AWS_ROLE_ARN` = salida `github_deploy_role_arn`
+   - `DEPLOY_ENABLED` = `true`
+   - Crea también el *environment* `production`.
+6. **Publicar el juego:** haz push a `main` o ejecuta *Actions → Deploy*. El resumen muestra la URL pública. Las imágenes se etiquetan con el commit.
+7. **Grafana:** `kubectl get svc kube-prometheus-stack-grafana -n monitoring` (usuario `admin`), tablero *Astro Defender*.
+8. **Pruebas de carga:**
+   - Jugadores: `bash scripts/evidencias/prueba-carga.sh spike 10 "SPIKE_USERS=1000 HOLD_SECONDS=240"` (ver [docs/PRUEBAS.md](docs/PRUEBAS.md)).
+   - Tabla de líderes: `locust -f loadtest/locust_leaderboard.py --host <API>`.
+9. **Destruir al terminar:**
+   ```bash
+   bash scripts/predestroy.sh
+   terraform destroy -var-file=env/dev.tfvars
+   ```
+   El script borra antes los balanceadores que creó Kubernetes. Si `destroy` se queda varios minutos en la subred o en la VPC, ejecuta en otra terminal `bash scripts/limpiar-huerfanos.sh`: borra las interfaces de red y los security groups que EKS deja huérfanos.
 
 ## Reparto del equipo
 

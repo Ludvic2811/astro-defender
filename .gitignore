@@ -12,7 +12,8 @@ terraform/backend.hcl
 terraform/.terraform.lock.hcl.bak
 
 # Pruebas de carga
-loadtest/resultados/
+loadtest/resultados/*/locust-master.log
+!loadtest/resultados/ramp_intento1/locust-master.log
 __pycache__/
 .venv/
 

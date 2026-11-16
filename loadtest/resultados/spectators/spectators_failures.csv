@@ -1,0 +1,5 @@
+Method,Name,Error,Occurrences,First Seen,Last Seen
+WS,rechazo (sala llena),Exception('full'),191,2026-11-16T19:05:42Z,2026-11-16T19:07:11Z
+POST,/api/match (rápida),"CatchResponseError('503: {""error"":""No hay servidores de juego disponibles. Intenta de nuevo en unos segundos.""}')",179,2026-11-16T19:06:05Z,2026-11-16T19:06:59Z
+POST,/api/match (rápida),"CatchResponseError('500: {""error"":""K8s POST /apis/allocation.agones.dev/v1/namespaces/astro/gameserverallocations -> 500: could not update the se')",2,2026-11-16T19:07:09Z,2026-11-16T19:07:10Z
+POST,/api/match (rápida),CatchResponseError('0: '),26,2026-11-16T19:06:27Z,2026-11-16T19:06:57Z

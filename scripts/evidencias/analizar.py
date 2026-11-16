@@ -53,6 +53,9 @@ def prueba(nombre):
     hist = leer(os.path.join(d, f"{nombre}_stats_history.csv"))
     if not prom:
         return None
+    # Solo muestras dentro de la prueba (t >= 0): la ventana descargada incluye 2 min previos
+    # que pueden contener el final de la prueba anterior.
+    prom = [x for x in prom if (f(x["t_rel_s"]) or 0) >= 0]
     r = {"prueba": nombre}
     t = col(prom, "t_rel_s")
     jug = col(prom, "jugadores")
@@ -93,6 +96,31 @@ def prueba(nombre):
     if jug:
         meta = 0.9 * r["ccu_max"]
         r["t_ccu_90_s"] = next((f(x["t_rel_s"]) for x in prom if (f(x["jugadores"]) or 0) >= meta), None)
+    # Reacción medida desde el instante en que Locust supera 100 usuarios (inicio real de la carga),
+    # para no confundirla con los nodos que se agregan para los propios workers de Locust.
+    hist_all = [x for x in hist if x["Name"] == "Aggregated" and f(x["User Count"])]
+    if hist_all and prom:
+        t_ini = int(open(os.path.join(d, "ventana.txt")).read().split("inicio=")[1].split()[0])
+        t_carga = next((int(x["Timestamp"]) for x in hist_all if f(x["User Count"]) >= 100), None)
+        t_fin = next((int(x["Timestamp"]) for x in hist_all
+                      if t_carga and int(x["Timestamp"]) > t_carga + 30 and (f(x["User Count"]) or 0) == 0), None)
+        if t_carga:
+            rel = [(int(x["timestamp"]) - t_carga, x) for x in prom]
+            base = min(rel, key=lambda p: abs(p[0]))[1]
+            def primero(cond):
+                return next((t for t, x in rel if t >= 0 and cond(x)), None)
+            r["t_carga_rel_s"] = t_carga - t_ini
+            r["reac_pendientes_s"] = primero(lambda x: (f(x["pods_pendientes"]) or 0) > (f(base["pods_pendientes"]) or 0))
+            r["reac_fleet_s"] = primero(lambda x: (f(x["gs_total"]) or 0) > (f(base["gs_total"]) or 0))
+            r["reac_hpa_s"] = primero(lambda x: (f(x["lobby_replicas"]) or 0) > (f(base["lobby_replicas"]) or 0))
+            r["reac_nodo_s"] = primero(lambda x: (f(x["nodos"]) or 0) > (f(base["nodos"]) or 0))
+            r["nodos_al_iniciar_carga"] = f(base["nodos"])
+            ventana = [x for t, x in rel if 0 <= t <= ((t_fin - t_carga) if t_fin else 10**9) + 30]
+            if ventana:
+                r["ccu_max_en_carga"] = max(f(x["jugadores"]) or 0 for x in ventana)
+                meta = 0.9 * r["ccu_max_en_carga"]
+                r["reac_ccu90_s"] = primero(lambda x: (f(x["jugadores"]) or 0) >= meta)
+                r["duracion_carga_s"] = (t_fin - t_carga) if t_fin else None
     # Locust: errores y latencias
     agg = next((x for x in stats if x["Name"] == "Aggregated"), None)
     if agg:

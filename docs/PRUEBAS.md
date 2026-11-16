@@ -1,94 +1,86 @@
 # Pruebas de carga y autoescalado
 
-## Preparación
+Todas las cifras de este documento salen de ejecuciones reales en AWS (us-east-1) el **16 de noviembre de 2026**. Los datos crudos están en `loadtest/resultados/` (CSV y HTML de Locust, series de Prometheus) y el resumen en `docs/evidencias/resultados.json`. Las gráficas se regeneran con `scripts/evidencias/graficas.py`.
 
-1. Ejecuta Locust **desde una instancia EC2 en la misma región** (por ejemplo c6i.xlarge). Así la red de tu casa no se vuelve el cuello de botella y la transferencia de datos sale más barata.
-   ```bash
-   pip install -r loadtest/requirements.txt
-   export LOBBY=http://$(kubectl get svc astro-lobby -n astro -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
-   mkdir -p loadtest/resultados
-   ```
-2. Usa `--processes -1` para aprovechar todos los núcleos del generador de carga.
-3. **Capacidad del clúster:** cada GameServer pide 100m de CPU, y una t3.medium admite como máximo 17 pods. 1,000 jugadores en salas de 4 son unas 250 partidas, es decir, entre 17 y 20 nodos t3.medium. Antes de la prueba de pico:
-   - Sube `node_max` (variable `NODE_MAX` en GitHub) a 20 o 25 y vuelve a ejecutar *apply*.
-   - Revisa la **cuota de vCPU On-Demand** de tu cuenta (*Service Quotas → EC2 → Running On-Demand Standard instances*). Las cuentas nuevas y las de AWS Academy suelen tener límites bajos.
-4. Abre Grafana (tablero *Astro Defender*) y el tablero `astro-defender` de CloudWatch, y toma capturas durante cada prueba.
+## Cómo se ejecutaron
 
-## 1. Prueba de rampa
+- **Locust dentro del clúster** (`k8s/loadtest/locust.yaml`): 1 maestro y 10 workers. Así la red de una casa no limita la prueba. Los bots usan la **URL pública del lobby** y se conectan al **puerto público del GameServer**, igual que un jugador real.
+- Cada bot envía controles cada 200 ms y un ping por segundo. El **RTT** medido es el ciclo completo jugador↔servidor.
+- Orquestador: `bash scripts/evidencias/prueba-carga.sh <ramp|spike|spectators> <workers> "<variables>"`. Descarga los CSV del maestro y guarda la ventana de tiempo de la prueba.
+- Métricas: `python scripts/evidencias/metricas-prometheus.py loadtest/resultados/<prueba>` consulta Prometheus (por `kubectl port-forward`) y guarda `prometheus.csv`. Incluye CCU, espectadores, GameServers por estado, nodos, réplicas del lobby, tick p50/p99, latencia de asignación, tráfico y CPU.
+- Resumen: `python scripts/evidencias/analizar.py`; costos: `python scripts/evidencias/costos.py`.
+- Clúster: nodos t3.large (máx. 20; la cuota de la cuenta se subió de 32 a 64 vCPU). Cada GameServer pide 50m de CPU más 10m del sidecar de Agones.
 
-Sube 100 jugadores por minuto hasta llegar a 1,000, mantiene la carga 5 minutos y luego baja.
+## Resultados
 
-```bash
-LOAD_SHAPE=ramp locust -f loadtest/locustfile.py --host $LOBBY --headless --processes -1 \
-  --csv loadtest/resultados/rampa --html loadtest/resultados/rampa.html
-```
+| Prueba | CCU máx. | Espectadores | Partidas | Nodos | RTT p95 en CCU máx. | Tick p99 mediana / máx. | Errores |
+|---|---|---|---|---|---|---|---|
+| Rampa 0→1,000 en 10 min (colchón 10 %) | 790 | 0 | 202 | 4 → 15 | 26 ms | 12 / 19 ms | 1.37 % |
+| Pico 20→1,000 en 30 s (colchón 25 % + reserva) | 925 | 0 | 239 | 6 → 20 | 190 ms | 8 / 27 ms | 1.69 % |
+| 200 jugadores + 500 espectadores | 200 | 500 | 50 | 20 → 21 | 28 ms | 11 / 41 ms | 0.15 % |
 
-**Qué observar:** cómo crecen en paralelo las réplicas del Fleet, los nodos y los jugadores; la latencia de asignación p95 y el RTT.
+Gráficas: `docs/evidencias/20_prueba_rampa.png`, `21_prueba_pico.png`, `22_prueba_espectadores.png`, `23_curva_ccu_latencia.png` y `24_errores.png`. Hay capturas de Grafana en `33*_grafana_*.png` y de CloudWatch en `30*` a `35*.png`.
 
-## 2. Prueba de pico (1,000 jugadores)
+### Primer intento de rampa (colchón fijo de 5)
 
-20 jugadores de base y luego 1,000 en unos 30 segundos.
+Se detuvo a los 7 minutos: **falló el 75 % de las solicitudes de partida** (1,158 de 1,546), porque los 5 servidores Ready se agotaban en segundos. Sus series de Prometheus se perdieron: el Cluster Autoscaler retiró el nodo donde vivía Prometheus, que no tenía volumen persistente. Se conservan las cifras finales del log de Locust (`loadtest/resultados/ramp_intento1/`).
 
-```bash
-LOAD_SHAPE=spike SPIKE_USERS=1000 locust -f loadtest/locustfile.py --host $LOBBY --headless \
-  --processes -1 --csv loadtest/resultados/pico --html loadtest/resultados/pico.html
-```
+### Capacidad máxima
 
-**Tiempo de reacción del autoescalado.** Mídelo con los paneles de Grafana:
+La curva CCU contra RTT p95 se mantiene plana (10–40 ms) hasta unos 650 jugadores y **cruza la meta de 80 ms alrededor de 750 jugadores**, con 14 nodos activos. Eso da unos 54 jugadores por nodo, o unos 75 por nodo de juego si se descuentan los 4 nodos de Locust.
 
-| Métrica | Cómo se mide |
+Por encima de ese punto:
+
+- el nodo más cargado estaba al 88–95 % de CPU, porque la programación Packed llena cada nodo;
+- el tick p99 llegó a 26.9 ms, por encima del presupuesto de 16.7 ms;
+- los generadores de Locust llegaron a 0.73 núcleos, cerca de su límite, así que parte de la latencia puede venir de ellos.
+
+### Tiempo de reacción (pico, desde que Locust supera 100 usuarios)
+
+| Capa | Reacción medida |
 |---|---|
-| Reacción del FleetAutoscaler | Momento del pico → momento en que *réplicas deseadas* empieza a subir. Esperado: ≤ 5 s (`sync.fixedInterval`) |
-| Pods pendientes | Duración del intervalo con `pods pendientes > 0` |
-| Reacción del Cluster Autoscaler | Primer pod `Pending` → nodo nuevo `Ready` (`kubectl get nodes -w`). Suele tardar de 1.5 a 3 min por el arranque de EC2 |
-| Impacto en el jugador | Latencia de asignación p95 (`astro_lobby_allocation_seconds`) y fallos de `/api/match` (503 cuando se agotan los 25 s de reintentos) |
-| Reducción | Al terminar: tiempo hasta que bajan las réplicas y luego los nodos (`scale-down-unneeded-time = 3m`) |
+| FleetAutoscaler (nuevos GameServers) | 18 s (las muestras son cada 15 s) |
+| HPA del lobby (2 → 10 pods) | 48 s |
+| Primeros pods pendientes | 48 s |
+| Cluster Autoscaler, primer nodo nuevo | 138 s; luego varios nodos de golpe (10 → 20) |
+| 90 % del CCU máximo | 243 s |
 
-Comando útil para registrar eventos con hora: `kubectl get events -A -w --field-selector reason=TriggeredScaleUp`.
+**Comparación de configuraciones:**
 
-## 3. Espectadores (500 medidos, extrapolados a 20,000)
+| Colchón del FleetAutoscaler | Resultado |
+|---|---|
+| 5 fijos | 75 % de solicitudes fallidas |
+| 10 % | ~90 jugadores por minuto |
+| 25 % + sobreaprovisionamiento (`k8s/overprovisioning.yaml`) | ~250 jugadores por minuto |
 
-```bash
-LOAD_SHAPE=spectators PLAYERS=200 SPECTATORS=500 locust -f loadtest/locustfile.py --host $LOBBY \
-  --headless --processes -1 --csv loadtest/resultados/espectadores --html loadtest/resultados/espectadores.html
-```
+Las solicitudes de partida fallidas (rampa 8,295 de 10,036; pico 4,888 de 6,656) son esperas de 25 s sin servidor Ready, tras las cuales el bot reintenta. Cuentan intentos, no jugadores perdidos.
 
-Toma estos valores de Grafana (en promedio, durante la meseta):
+Hubo 837 rechazos por «sala llena» en el pico: dos asignaciones simultáneas llegaban a la misma sala antes de que el servidor publicara que estaba completa.
 
-- `B` = bytes enviados por segundo por espectador: `sum(rate(astro_ws_bytes_sent_total[1m])) / (jugadores + espectadores)`
-- `C` = CPU adicional por espectador en el GameServer (compara la CPU por pod antes y después de que lleguen los espectadores)
-- `I` = intervalo entre snapshots p95 (en Locust) y tick p99. Sirven para comprobar que la calidad no se degrada.
+### Espectadores (500 medidos, extrapolación a 20,000)
 
-**Extrapolación a 20,000 espectadores**, con valores de ejemplo (sustitúyelos por los medidos):
+- Con 200 jugadores y 500 espectadores el tráfico estable fue de ~68.5 Mbps, es decir **~98 kbps por conexión**. No hubo fallos de conexión y el intervalo entre instantáneas fue p95 de 68 ms.
+- **20,000 espectadores** ≈ 1.96 Gbps, 882 GB por hora, unos **US$79 por hora** de salida a Internet (US$0.09/GB).
+- Con 4 pilotos por partida, 20,000 espectadores en 250 partidas son unos 80 por sala. Conviene un relé o una CDN de instantáneas.
+- Los espectadores reciben instantáneas por **WebSocket**. **No se implementó streaming HLS.** Un stream de 4,500 kbps usaría unas 46 veces más ancho de banda.
 
-| Concepto | Fórmula | Ejemplo con B = 25 KB/s y C = 2 m de CPU |
-|---|---|---|
-| Ancho de banda total | 20,000 × B | 500 MB/s ≈ 4 Gbps |
-| Transferencia por hora | 20,000 × B × 3,600 | ≈ 1.8 TB/h, unos USD 160/h a USD 0.09/GB |
-| CPU adicional | 20,000 × C | 40 vCPU, unos 20 nodos t3.medium solo para difundir |
+## Tabla de líderes serverless
 
-**Conclusión esperada:** con espectadores conectados directamente al GameServer, el ancho de banda y el *fan-out* crecen linealmente con cada partida. Para 20,000 espectadores conviene:
+- 100 usuarios durante 3 minutos desde México (`loadtest/locust_leaderboard.py`): **12,864 peticiones a 71.8 por segundo**, p50 130 ms y p95 150 ms.
+- Hubo 50 respuestas 503 (0.39 %) en el primer minuto. La cuenta tiene un **límite de 10 ejecuciones concurrentes de Lambda** (`aws lambda get-account-settings`).
+- Pruebas funcionales en `docs/evidencias/salidas/serverless_pruebas.txt`.
 
-1. Separar los espectadores en un **nivel de relay**: un Deployment con HPA que recibe un solo flujo por partida y lo replica.
-2. Bajar la frecuencia a 10 Hz para espectadores y añadir un **retraso de 2 a 5 s**, lo que permite agrupar y comprimir los datos.
-3. Usar compresión (`permessage-deflate`) o snapshots delta: un 60–80 % menos de bytes.
+## Costos
 
-## 4. Latencia y concurrencia
+| Escenario | Nodos | US$/hora | US$ por jugador-hora | Notas |
+|---|---|---|---|---|
+| Reposo (sin jugadores) | 2 | 0.32 | - | Plano de control EKS, 2 nodos y balanceador del juego |
+| Capacidad medida (p95 < 80 ms) | 10 | 1.04 | 0.0014 | ~750 CCU con 14 nodos activos, menos 4 dedicados a Locust |
+| Pico medido (925 CCU) | 16 | 1.58 | 0.0017 | 20 nodos, menos 4 de Locust; p95 ya sobre 80 ms |
+| 1,000 CCU (proyección) | 16 | 1.58 | 0.0016 | 75 CCU por nodo de juego + 2 de sistema |
+| 10,000 CCU (proyección) | 136 | 12.43 | 0.0012 | Requiere ampliar la cuota de vCPU |
 
-El reporte HTML de Locust de cada prueba incluye:
-
-- `WS rtt (ping/pong)`: latencia de ida y vuelta jugador ↔ GameServer (p50, p95, p99).
-- `WS intervalo entre snapshots`: debe mantenerse cerca de 50 ms. Si sube, el servidor está saturado.
-- `/api/match`: latencia de asignación vista por el cliente.
-- Concurrencia: usuarios activos de Locust frente a `astro_players_connected` en Grafana.
-
-## Plantilla de resultados (para el reporte)
-
-| Prueba | Usuarios máx. | Partidas máx. | Nodos (min → máx) | RTT p95 | Asignación p95 | Fallos | Reacción FleetAutoscaler | Reacción Cluster Autoscaler |
-|---|---|---|---|---|---|---|---|---|
-| Rampa | 1,000 | | | | | | | |
-| Pico | 1,000 | | | | | | | |
-| Espectadores | 200 + 500 | | | | | | | |
+Comparación serverless contra servidor tradicional para la tabla de líderes: **US$1.45 por millón de consultas** contra **US$19.47 al mes** de una t3.small encendida 24/7.
 
 ## 5. Balance de la dificultad (simulador)
 
